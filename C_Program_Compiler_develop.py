@@ -59,9 +59,16 @@ FOOTER = '<script src="../html/js/jquery-3.3.1.min.js"></script>\n'\
          '<script src="../thirdparty/code-prettify/loader/lang-css.js"></script>\n'\
          '<script>prettyPrint();</script>\n'
 
-
-MODAL =  '{1}\n'
-
+MODAL = '<button type="button" class="btn btn-outline-dark" data-toggle="modal" data-target="#{0}">{0}</button>\n'\
+        '<div class="modal fade" id="{0}" tabindex="-1" role="dialog" aria-labelledby="{0}">\n'\
+        '<div class="modal-dialog" role="document">\n'\
+        '<div class="modal-content">\n'\
+        '<div class="modal-body">\n'\
+        '{1}\n'\
+        '</div>\n'\
+        '</div><!-- /.modal-content -->\n'\
+        '</div><!-- /.modal-dialog -->\n'\
+        '</div><!-- /.modal -->\n'
 
 
 def execute(args, stdout=PIPE, stdin=PIPE, stderr=PIPE, shell=False, desc=''):
@@ -205,7 +212,7 @@ def write_trials(results, answers, task, out_file):
         out_file.write('<div class="tab-content" id="pills-tabContent">')
         out_file.write('<div class="tab-pane fade show active" id="trial{0}_{1}" role="tabpanel" '
                        'aria-labelledby="pills-home-tab">'.format(task+1, k))
-        
+
         if v.get('stderr'):
             out_file.write('<pre class="prettyprint linenums">\n')
             for o, n in escape_seq.items():
@@ -487,7 +494,7 @@ def main(args=None):
             with zipfile.ZipFile(filename) as zfile:
                 zfile.extractall(path=exercise_sentences_path)
     elif len(exercise_sentences_files) < 1:
-        raise FileNotFoundError('No sentences folders in exercise path')
+        raise FileNotFoundError('No files in exercise path')
     else:
         pass
 
@@ -611,13 +618,11 @@ def main(args=None):
             out_file.write('<h3>{} {}</h3>\n'.format(student_id, students[student_id]))
             out_file.write('</div><!-- col-md-8 -->\n')
             out_file.write('<div class="col-md-4">\n')
-
-            out_file.write('</div><!-- col-md-4 -->\n')
             for path in sorted(glob.glob(os.path.join(exercise_sentences_path, '**'), recursive=True)):
                 if re.match('ex[0-9]+_[0-9]+.html', os.path.basename(path)):
                     name = os.path.splitext(os.path.basename(path))[0]
                     out_file.write(MODAL.format(name, read_html_body(path)))
-
+            out_file.write('</div><!-- col-md-4 -->\n')
             out_file.write('</div><!-- row -->\n')
 
             # tab
