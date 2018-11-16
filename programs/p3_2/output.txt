@@ -1,0 +1,15 @@
+char のサイズ: 8 bit
+char の最大値: 127
+char の最小値: -128
+int の最大値: 2147483647
+int の最大値: -2147483648
+long の最大値: 9223372036854775807
+long の最小値: -9223372036854775808
+signed char の最大値: 127
+signed char の最小値: -128
+short の最大値: 32767
+short の最小値: -32768
+unsigned char の最大値: 255
+unsigned int の最大値: 4294967295
+unsigned long の最大値: 18446744073709551615
+unsigned short の最大値: 65535

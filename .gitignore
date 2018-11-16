@@ -102,3 +102,17 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+
+#students
+./students.txt
+
+#zipdata
+./1st/
+./2nd/
+./3rd/
+./[4-9]th/
+./1[0-9]th/
+
+#directry
+./tmp/
+./output/

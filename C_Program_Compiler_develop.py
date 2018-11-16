@@ -212,7 +212,7 @@ def write_trials(results, answers, task, out_file):
         out_file.write('<div class="tab-content" id="pills-tabContent">')
         out_file.write('<div class="tab-pane fade show active" id="trial{0}_{1}" role="tabpanel" '
                        'aria-labelledby="pills-home-tab">'.format(task+1, k))
-        
+
         if v.get('stderr'):
             out_file.write('<pre class="prettyprint linenums">\n')
             for o, n in escape_seq.items():
