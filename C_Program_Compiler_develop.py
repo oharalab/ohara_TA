@@ -94,7 +94,8 @@ def read_html_body(filename, encoding='shift-jis'):
     _, html_data = html_data.split('<body')
     idx = html_data.find('>') + 1
     html_data, _ = html_data[idx:].split('</body')
-    return html_data
+
+    return re.sub('<div class="result">','',html_data)
 
 
 def write_summary(timestamp, timestamp_status, file_path, status, out_file):
