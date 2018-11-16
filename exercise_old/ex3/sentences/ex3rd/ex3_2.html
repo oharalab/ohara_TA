@@ -1,0 +1,56 @@
+<html>
+<head>
+  <title>実習課題3_2</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=shift_jis">
+</head>
+
+<body bgcolor="#000000" text="#FFFFFF" vlink="#00FF00" link="#99FFCC">
+
+<h2>実習課題3_2</h2>
+<hr>
+
+<p>
+以下のプログラムには複数の間違いが含まれている．<br>
+実行例と同じ結果が得られるようにデバッグせよ．<br>
+ただし，printf() では，画面に出力する数値を直接書いてはならない．<br>
+プロジェクト名は ex3_2 とし，ソースファイルの名前は ex3_2.c とする．<br>
+</p>
+
+<p>
+手順としては，まず以下のコードを ex3_2.c として作成し，その上でデバッグすること．
+</p>
+
+<pre>
+#include &lt;stdio.h&gt;
+
+int main(){
+	double a, b, c;
+
+	a = log10(c);
+	b = log10(6.0 / 16.0);
+
+	printf("a = %d\n", a);
+	printf("b = %f\n", b);
+	printf("c = %d\n", c);
+
+	printf("b = %f\n", log10(2) + log10(3) - log10(16));
+
+	return(0);
+}
+</pre>
+
+<p>実行例
+<hr>
+<pre>
+a =   2.000
+b =  -0.426
+c = 100.000
+b =  -0.426
+</pre>
+
+<p>　</p>
+<p>　</p>
+<p>　</p>
+
+</body>
+</html>
