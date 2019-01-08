@@ -1,3 +1,4 @@
+# ここで utf8 に変換して出力しているのは，あまり必要のない行為なので本当は shift-jis で出力すべき
 import argparse
 from bs4 import BeautifulSoup
 import difflib
@@ -65,8 +66,12 @@ def search_answers(text):
         answer_text = BeautifulSoup(answer_text, "lxml")
 
         #for line in answer.text.split("\r"):
+        prev_line = "dammy sentence"
         for line in answer_text.text.split("\r"):
             line = line.replace("&lt;", "<").replace("&gt;", ">").replace("&amp;", "&").replace("‾", "~")
+            if line == prev_line:
+                break
+            prev_line = str(line)
             if not check:
                 if line not in [" ", "", "\r"]:
                     check = True
@@ -91,7 +96,7 @@ def make_answers(unzip_path, input_path, temp_path):
                   if "ex" in filename]
     input_paths = [input_path + "/ex" + str(i) for i in range(1, 1+len(html_paths))]
     temp_paths = [temp_path + "/ex" + str(i) for i in range(1, 1 + len(html_paths))]
-    html_paths = [unzip_path + "/" + html_path for html_path in html_paths]
+    html_paths = [unzip_path + "/" + html_path for html_path in html_paths if html_path[-3:] != "txt"]
 
     make_directory(input_paths)
     make_directory(temp_paths)
