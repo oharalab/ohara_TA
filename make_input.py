@@ -91,7 +91,7 @@ def make_answers(unzip_path, input_path, temp_path):
                   if "ex" in filename]
     input_paths = [input_path + "/ex" + str(i) for i in range(1, 1+len(html_paths))]
     temp_paths = [temp_path + "/ex" + str(i) for i in range(1, 1 + len(html_paths))]
-    html_paths = [unzip_path + "/" + html_path for html_path in html_paths]
+    html_paths = [unzip_path + "/" + html_path for html_path in html_paths if html_path[-3:] != "txt"]
 
     make_directory(input_paths)
     make_directory(temp_paths)
