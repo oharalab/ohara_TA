@@ -2,16 +2,17 @@
 # coding: utf-8
 """
 Original author : 平野雅也
-
 Modified by Seiya Ito, 09/30/2018
 """
 
+import argparse
 import csv
 import collections
 import datetime
 import glob
 import os
 import re
+import math
 import shutil
 import subprocess
 from subprocess import PIPE
@@ -19,7 +20,6 @@ import sys
 import time
 import traceback
 import zipfile
-import argparse
 
 if sys.version_info[0] != 3:
     raise NotImplementedError('Not supported. Please use Python 3.x')
@@ -73,7 +73,6 @@ MODAL = '<button type="button" class="btn btn-outline-dark" data-toggle="modal" 
 
 def execute(args, stdout=PIPE, stdin=PIPE, stderr=PIPE, shell=False, desc=''):
     """
-
     :param args:
     :param stdout:
     :param stdin:
@@ -88,13 +87,159 @@ def execute(args, stdout=PIPE, stdin=PIPE, stderr=PIPE, shell=False, desc=''):
     return subprocess.Popen(args, stdout=stdout, stdin=stdin, stderr=stderr, shell=shell)
 
 
-def read_html_body(filename, encoding='shift-jis'):
-    with open(filename, 'rb') as f:
-        html_data = f.read().decode(encoding)
+def read_html_body(filename, encoding='utf8'):
+    try:
+        with open(filename, 'rb') as f:
+            html_data = f.read().decode(encoding)
+    except:
+        with open(filename, 'rb') as f:
+            html_data = f.read().decode("shift-jis")
     _, html_data = html_data.split('<body')
     idx = html_data.find('>') + 1
     html_data, _ = html_data[idx:].split('</body')
+    if "<div class=\"result\">" in html_data and "</div>" not in html_data:
+        html_data += "</div>"
     return html_data
+
+
+def read_html_answer(filename, encoding='utf8'):
+    with open(filename, 'r', encoding="utf8") as f:
+        result = f.read()
+    return result.encode("shift_jis").decode("shift_jis")
+
+def score_BLUE(first, second):
+    first = first.lower()
+    second = second.lower()
+
+def split_sentence(sentence, delimiter):
+    return sentence.split(delimiter)
+
+def split_document(doc):
+    return doc.split("\n")
+
+def split_string(string, delimiter=" ",method="doc"):
+    string = string.lower().replace(" ", "").replace("\t", "")
+    #string = string.replace("-", "").replace(".", " .").replace(",", " ,")\
+    #        .replace("(", " ( ").replace(")", " ) ").replace("[", " [ ").replace("]", " ] ")
+    doc = split_document(string)
+    stop_words = ["\n", "\r", ""]
+    morphs = []
+    for sentence in doc:
+        sentence = split_sentence(sentence, delimiter)
+        sentence = [word for word in sentence if word not in stop_words]
+        if method == "doc": # split document (all sentence)
+            morphs.extend(sentence)
+        else: # split every sentence
+            morphs.append(sentence)
+
+    return morphs
+
+def calc_information(worddict, method):
+    if method == "Huffman":
+        all_num = sum([value for value in worddict.values()])
+        keys = set(worddict.keys())
+        info = sum([len(key)*worddict[key]/all_num for key in keys])
+    else: # average word length
+        info = sum([len(key)*value for key,value in worddict.items()])
+    info = 1 / (info + 0.000001)
+    return info
+
+def calc_maxindex(information):
+    max_info = 0
+    index = 0
+    for i,info in enumerate(information):
+        if info > max_info:
+            max_info = info
+            index = i
+    return index
+
+def make_worddict(words):
+    word_dict = dict()
+    for word in words:
+        if word not in word_dict.keys():
+            word_dict[word] = 1
+        else:
+            word_dict[word] += 1
+    return word_dict
+
+def select_delimiter(doc, method = "Huffman"):
+    candidates = [" ", ":", ";", "=", "\"", "/", "+", "*"] + [chr(i) for i in range(97,97+26)]
+    information = []
+    for cand in candidates:
+        words = [word for sent in doc for word in sent.split(cand)]
+        word_dict = make_worddict(words)
+        info = calc_information(word_dict, method)
+        information.append(info)
+
+    index = calc_maxindex(information)
+    delimiter = candidates[index]
+    return delimiter
+
+def make_ngram(morphs, N):
+    return ["".join(morphs[i:i+N]) for i in range(0, len(morphs)-N+1)]
+
+def BP(c, r): # penaltiy
+    if c > r:
+        return 1
+    else:
+        c += 0.00001
+        return math.exp(1-r/c)
+
+def compare(pre, ans, method="full"):
+    if method == "full":
+        if pre == ans:
+            return 1
+        else:
+            return 0
+    else: # similar to multiple 1-gram score
+        mol = sum([1 if p == a else 0 for p in pre for a in ans])
+        den = len(pre) * len(ans)
+        return mol/den
+
+def calc_BLEU(first, second, delimiter, weights = 5, N=4, method="doc"): # N value is normally 4
+    first = split_string(first, delimiter, method)
+    second = split_string(second, delimiter, method)
+    #print("first", first)
+    #print("second", second)
+    if method=="doc":
+        scores = []
+        pena = BP(len(first), len(second))
+        for n in range(1, N+1):
+            first = make_ngram(first, n)
+            second = make_ngram(second, n)
+            pairs = [[f, s] for f in first for s in second]
+            #print(pairs)
+            mol = sum([compare(pair[0], pair[1]) for pair in pairs])
+            den = len(first) * len(second)
+            mol += 0.01 ** 2
+            den += 0.01
+            #print(mol, den, mol/den)
+            scores.append(math.log(mol/den*weights)/N)
+        #print(pena)
+        #print(scores)
+        #print(sum(scores))
+        #print(math.exp(sum(scores)))
+        return pena*math.exp(sum(scores))#- pena * math.exp(sum([math.log(0.000001)/n for n in range(1, N+1)]))
+    else:
+        print("sorry, it is not made yet")
+        #return [first, second]
+
+# if initially &amp; is used, default replace method makes incorrect text
+def replace_seq(text):
+
+    escape_seq = {
+        '&': '&amp;',
+        '<':  '&lt;',
+        '>': '&gt;',
+    }
+
+    for o, n in escape_seq.items():
+        text = text.replace(n, o)
+
+    for o, n in escape_seq.items():
+        text = text.replace(o, n)
+
+    return text
 
 
 def write_summary(timestamp, timestamp_status, file_path, status, out_file):
@@ -149,36 +294,32 @@ def write_code(src, out_file):
     :return:
     """
 
-    escape_seq = {
-        '&': '&amp;',
-        '<':  '&lt;',
-        '>': '&gt;',
-    }
-
     out_file.write('<pre class="prettyprint linenums">\n')
 
     ret = False
+    code_len = 0
 
     try:
         convert = execute([NKF_BIN, '-w', '--overwrite', src])
         stdout, stderr = convert.communicate()
         with open(src, 'r') as f:
             for line in f.readlines():
-                for k, v in escape_seq.items():
-                    line = line.replace(k, v)
+                line = replace_seq(line)
                 out_file.write(line)
+                code_len += len(line)
+
     except Exception as e:
         print(e)
         traceback.print_exc()
 
     out_file.write('</pre>\n')
+    out_file.write('<!-- class="code length" code length '+ str(code_len) +" -->")
 
     return ret
 
 
 def write_trials(results, answers, task, out_file):
     """
-
     :param results: path to source file
     :param answers: path to source file
     :param task:
@@ -186,14 +327,8 @@ def write_trials(results, answers, task, out_file):
     :return:
     """
 
-    escape_seq = {
-        '&': '&amp;',
-        '<':  '&lt;',
-        '>': '&gt;',
-    }
-
     answer = answers[task]
-
+    scores = []
     for k, v in results.items():
         out_file.write('<ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">\n')
         out_file.write('<li class="nav-item">')
@@ -215,20 +350,17 @@ def write_trials(results, answers, task, out_file):
 
         if v.get('stderr'):
             out_file.write('<pre class="prettyprint linenums">\n')
-            for o, n in escape_seq.items():
-                v['stderr'] = v['stderr'].replace(o, n)
+            v['stderr'] = replace_seq(v['stderr'])
             out_file.write('{}\n'.format(v['stderr']))
             out_file.write('</pre>\n')
         if v.get('std'):
             out_file.write('<pre class="prettyprint linenums">\n')
-            for o, n in escape_seq.items():
-                v['std'] = v['std'].replace(o, n)
+            v['std'] = replace_seq(v['std'])
             out_file.write('{}\n'.format(v['std']))
             out_file.write('</pre>\n')
         if v.get('file'):
             out_file.write('<pre class="prettyprint linenums">\n')
-            for o, n in escape_seq.items():
-                v['file'] = v['file'].replace(o, n)
+            v['file'] = replace_seq(v['file'])
             out_file.write('{}\n'.format(v))
             out_file.write('</pre>\n')
         out_file.write('</div>')
@@ -238,38 +370,42 @@ def write_trials(results, answers, task, out_file):
                            'aria-labelledby="pills-profile-tab">'.format(task+1, k))
             if answer[k].get('std'):
                 out_file.write('<pre class="prettyprint linenums">\n')
-                for o, n in escape_seq.items():
-                    answer[k]['std'] = answer[k]['std'].replace(o, n)
+                answer[k]['std'] = replace_seq(answer[k]['std'])
                 out_file.write('{}\n'.format(answer[k]['std']))
                 out_file.write('</pre>\n')
             if answer[k].get('file'):
                 out_file.write('<pre class="prettyprint linenums">\n')
-                for o, n in escape_seq.items():
-                    answer[k]['file'] = answer[k]['file'].replace(o, n)
+                answer[k]['file'] = replace_seq(answer[k]['file'])
                 out_file.write('{}\n'.format(v))
                 out_file.write('</pre>\n')
             out_file.write('</div>')
         out_file.write('</div>')
 
+        if v.get('std'):
+            delimiter = select_delimiter(split_string(answer[k]['std']))
+            max_score = calc_BLEU(answer[k]['std'], answer[k]['std'], delimiter, 4)
+            score = calc_BLEU(v['std'].encode("shift_jis").decode("shift_jis"), answer[k]['std'].encode("shift_jis").decode("shift_jis"), delimiter, 4)
+            #print(score)
+            #print(max_score)
+            score = score / max_score
+            scores.append(score)
+            out_file.write("<!-- score "+ str(score) +" -->")
+    if len(scores) != 0:
+        ave_score = sum(scores)/len(scores)
+        #print(scores)
+        out_file.write('<!-- class="averagescore" average score '+ str(ave_score) +" -->")
+
 
 def write_error_msg(msg, out_file):
     """
-
     :param msg: path to source file
     :param out_file: 書き込みファイル
     :return:
     """
 
-    escape_seq = {
-        '&': '&amp;',
-        '<':  '&lt;',
-        '>': '&gt;',
-    }
-
     out_file.write('<h5>Compile Message</h5>\n')
     out_file.write('<pre class="prettyprint linenums">\n')
-    for o, n in escape_seq.items():
-        msg = msg.replace(o, n)
+    msg = replace_seq(msg)
     out_file.write('{}\n'.format(msg))
     out_file.write('</pre>\n')
 
@@ -280,12 +416,10 @@ def save_pptx_as_pdf():
 
 class Compiler(object):
     """
-
     """
 
     def __init__(self, n, input_files=None, output_files=None, stdout_path=None, debug=False):
         """
-
         :param n: 課題番号
         :param input_files:
         :param output_files:
@@ -354,7 +488,6 @@ class Compiler(object):
         :param program: 実行ファイル
         :return:
             point:csvに出力する点数
-
         """
         out = {}
         n = max(1, len(self.input_files))
@@ -473,7 +606,6 @@ def get_latest_program_info(program_info):
 
 def main(args=None):
     """
-
     :param args:
     :return:
     """
@@ -485,6 +617,7 @@ def main(args=None):
 
     exercise_path = args.exercise_path % args.exercise
     answers_path = os.path.join(exercise_path, 'answers')
+    temp_path = os.path.join(exercise_path, 'temps')
     exercise_sentences_path = os.path.join(exercise_path, 'sentences')
 
     exercise_sentences_files = glob.glob(os.path.join(exercise_sentences_path, '*'))
@@ -519,8 +652,18 @@ def main(args=None):
             compilers[i].convert_encoding(src)
             compilers[i].compile(src, program_name)
             answers[i] = compilers[i].execute(program_name)
+        elif os.path.exists(os.path.join(temp_path, 'ex%d' % (i+1))):
+            temp_paths = [os.path.join(os.path.join(temp_path, 'ex%d' % (i+1)), trial) \
+                            for trial in sorted(os.listdir(os.path.join(temp_path, 'ex%d' % (i+1))))]
+
+            answers[i] =  {j+1: \
+                                {'point': 0, \
+                                'std': read_html_answer(path), \
+                                'stderr': ''} \
+                                for j, path in enumerate(temp_paths)}
         else:
             answers[i] = {}
+    print("answers", answers)
 
     # 辞書初期化
     scoring = collections.OrderedDict()
@@ -543,7 +686,6 @@ def main(args=None):
         saiten = {}
         for i in range(args.num_tasks):
             saiten.update({'ex%d' % (i + 1): 0})
-
         saiten['s_id'] = student_id
         verify = {}
         extract_dir = os.path.join(args.tmp, student_id)
