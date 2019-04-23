@@ -1,4 +1,0 @@
-main glb = 1000
-main loc = 2222
-func glb = 1000
-func loc = 9999
