@@ -1,4 +1,3 @@
-# ここで utf8 に変換して出力しているのは，あまり必要のない行為なので本当は shift-jis で出力すべき
 import argparse
 from bs4 import BeautifulSoup
 import difflib

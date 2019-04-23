@@ -104,7 +104,10 @@ venv.bak/
 .mypy_cache/
 
 #students
+./student.csv
+./student.txt
 ./students.txt
+./student_temp.txt
 
 #zipdata
 ./1st/
