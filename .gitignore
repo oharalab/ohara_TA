@@ -104,7 +104,9 @@ venv.bak/
 .mypy_cache/
 
 #students
-./students.txt
+/student*.csv
+/student*.txt
+/easy_*
 
 #zipdata
 ./1st/
@@ -112,7 +114,13 @@ venv.bak/
 ./3rd/
 ./[4-9]th/
 ./1[0-9]th/
+/programs.zip
 
 #directry
-./tmp/
-./output/
+/output/
+/exercise/
+/exercise_old/
+/test/
+/test_file/
+/tmp/
+/programs/

@@ -24,6 +24,7 @@ import zipfile
 if sys.version_info[0] != 3:
     raise NotImplementedError('Not supported. Please use Python 3.x')
 
+# nkf のインストールが必要な場合あり，ディレクトリは環境依存
 if sys.platform == 'cygwin':
 	NKF_BIN = './bin/nkf32.exe'
 else:
@@ -87,25 +88,23 @@ def execute(args, stdout=PIPE, stdin=PIPE, stderr=PIPE, shell=False, desc=''):
     return subprocess.Popen(args, stdout=stdout, stdin=stdin, stderr=stderr, shell=shell)
 
 
-def read_html_body(filename, encoding='utf8'):
-    try:
-        with open(filename, 'rb') as f:
-            html_data = f.read().decode(encoding)
-    except:
-        with open(filename, 'rb') as f:
-            html_data = f.read().decode("shift-jis")
+def read_html_body(filename, encoding="utf8"):
+    with open(filename, 'r', encoding="shift-jis") as f:
+        html_data = f.read().encode(encoding, errors="ignore").decode(encoding)
     _, html_data = html_data.split('<body')
     idx = html_data.find('>') + 1
     html_data, _ = html_data[idx:].split('</body')
     if "<div class=\"result\">" in html_data and "</div>" not in html_data:
         html_data += "</div>"
+    #print(html_data)
     return html_data
 
 
-def read_html_answer(filename, encoding='utf8'):
-    with open(filename, 'r', encoding="utf8") as f:
+def read_html_answer(filename, encoding="utf8"):
+    with open(filename, 'r', encoding=encoding, errors="ignore")as f:
         result = f.read()
-    return result.encode("shift_jis").decode("shift_jis")
+    print(result)
+    return result
 
 def score_BLUE(first, second):
     first = first.lower()
@@ -384,7 +383,7 @@ def write_trials(results, answers, task, out_file):
         if v.get('std'):
             delimiter = select_delimiter(split_string(answer[k]['std']))
             max_score = calc_BLEU(answer[k]['std'], answer[k]['std'], delimiter, 4)
-            score = calc_BLEU(v['std'].encode("shift_jis").decode("shift_jis"), answer[k]['std'].encode("shift_jis").decode("shift_jis"), delimiter, 4)
+            score = calc_BLEU(v['std'], answer[k]['std'], delimiter, 4)
             #print(score)
             #print(max_score)
             score = score / max_score
@@ -515,12 +514,8 @@ class Compiler(object):
                         error = b'segmentation fault\n'
                     else:
                         error = b'return code %d\n' % result.returncode
-                try:
-                    out[i+1].update({'std': output.decode('utf-8'), 'stderr': error.decode('utf-8')})
-                except Exception as e:
-                    print('Check')
-                    out[i+1].update({'std': output.decode('shift-jis'), 'stderr': error.decode('utf-8')})
-
+                out[i+1].update({'std': output.decode('utf-8', errors="ignore"), 'stderr': error.decode('utf-8')})
+                
                 out[i + 1].update({'point': 4})
                 if self.output_path is not None:
                     out[i+1].update({
