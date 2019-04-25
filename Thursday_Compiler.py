@@ -20,6 +20,7 @@ from subprocess import PIPE
 import sys
 import time
 import traceback
+from utils import zen2han
 import zipfile
 
 if sys.version_info[0] != 3:
@@ -199,8 +200,8 @@ def compare(pre, ans, method="full"):
 def calc_BLEU(first, second, delimiter, weights = 5, N=4, method="doc"): # N value is normally 4
     first = split_string(first, delimiter, method)
     second = split_string(second, delimiter, method)
-    #print("first", first)
-    #print("second", second)
+    print("first", first)
+    print("second", second)
     if method=="doc":
         scores = []
         pena = BP(len(first), len(second))
@@ -350,17 +351,17 @@ def write_trials(results, answers, task, out_file):
 
         if v.get('stderr'):
             out_file.write('<pre class="prettyprint linenums">\n')
-            v['stderr'] = replace_seq(v['stderr'])
+            v['stderr'] = replace_seq(zen2han(v['stderr']))
             out_file.write('{}\n'.format(v['stderr']))
             out_file.write('</pre>\n')
         if v.get('std'):
             out_file.write('<pre class="prettyprint linenums">\n')
-            v['std'] = replace_seq(v['std'])
+            v['std'] = replace_seq(zen2han(v['std']))
             out_file.write('{}\n'.format(v['std']))
             out_file.write('</pre>\n')
         if v.get('file'):
             out_file.write('<pre class="prettyprint linenums">\n')
-            v['file'] = replace_seq(v['file'])
+            v['file'] = replace_seq(zen2han(v['file']))
             out_file.write('{}\n'.format(v))
             out_file.write('</pre>\n')
         out_file.write('</div>')
@@ -370,12 +371,12 @@ def write_trials(results, answers, task, out_file):
                            'aria-labelledby="pills-profile-tab">'.format(task+1, k))
             if answer[k].get('std'):
                 out_file.write('<pre class="prettyprint linenums">\n')
-                answer[k]['std'] = replace_seq(answer[k]['std'])
+                answer[k]['std'] = replace_seq(zen2han(answer[k]['std']))
                 out_file.write('{}\n'.format(answer[k]['std']))
                 out_file.write('</pre>\n')
             if answer[k].get('file'):
                 out_file.write('<pre class="prettyprint linenums">\n')
-                answer[k]['file'] = replace_seq(answer[k]['file'])
+                answer[k]['file'] = replace_seq(zen2han(answer[k]['file']))
                 out_file.write('{}\n'.format(v))
                 out_file.write('</pre>\n')
             out_file.write('</div>')
@@ -666,9 +667,8 @@ def main(args=None):
 
     # 正確には zip ではないが，Friday 側との互換性のため変数名は zipfiles
     zipfiles = {}
-    for zfile in sorted(glob.glob(args.zip+"*")):
-        m = re.search('([0-9]{8})_a[0-9]{7}_([0-9]{2})', os.path.basename(zfile))
-        student_id = m.group(1)
+    for zfile in sorted(glob.glob(args.zip+"/*")):
+        student_id = os.path.basename(zfile)
         assert student_id in students, "履修者名簿にない学籍番号です．チェックしてください．"
         try:
             submit_id = int(m.group(2))
