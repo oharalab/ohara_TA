@@ -63,12 +63,14 @@ task_score = []
 for i in range(4):
     task_code.append(code_info[i*2]/code_info[i*2+1])
     task_score.append(score_info[i*2]/score_info[i*2+1])
-task_score = [score if score >= 0.01 else 0.01 for score in task_score]
+task_score = [score if score >= 0.1 else 0.1 for score in task_score]
 print(task_code)
 print(task_score)
 
 code_len_rate = float(args.code_length_rate)
 score_rate = float(args.score_rate)
+max_score = float(args.max_score)
+
 
 with open("easy_score.csv", "w") as f:
     for key, value in score_dict.items():
@@ -77,7 +79,7 @@ with open("easy_score.csv", "w") as f:
         scores = value[1]
         easy_scores = [0] * 4
         for i,score in enumerate(scores):
-            if score == 1:
+            if score >= max_score:
                 #print(score, 5)
                 easy_scores[i] = "5"
             elif score >= task_score[i] * score_rate:
@@ -106,7 +108,7 @@ with open("easy_subscore.csv", "w") as f:
         scores = value[1]
         easy_scores = [0] * 4
         for i,score in enumerate(scores):
-            if score == 1:
+            if score >= max_score:
                 #print(score, 5)
                 easy_scores[i] = "5"
             elif score != 0:

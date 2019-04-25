@@ -11,6 +11,7 @@ import collections
 import datetime
 import glob
 import os
+import pathlib
 import re
 import math
 import shutil
@@ -663,11 +664,16 @@ def main(args=None):
     # 辞書初期化
     scoring = collections.OrderedDict()
 
+    # 正確には zip ではないが，Friday 側との互換性のため変数名は zipfiles
     zipfiles = {}
-    for zfile in sorted(glob.glob(os.path.join(args.zip, '*.zip'))):
+    for zfile in sorted(glob.glob(args.zip+"*")):
         m = re.search('([0-9]{8})_a[0-9]{7}_([0-9]{2})', os.path.basename(zfile))
         student_id = m.group(1)
-        submit_id = int(m.group(2))
+        assert student_id in students, "履修者名簿にない学籍番号です．チェックしてください．"
+        try:
+            submit_id = int(m.group(2))
+        except:
+            submit_id = 1
 
         if zipfiles.get(student_id) is None:
             zipfiles[student_id] = (submit_id, zfile)
@@ -676,7 +682,6 @@ def main(args=None):
                 zipfiles[student_id] = (submit_id, zfile)
 
     student_ids = sorted(zipfiles.keys())
-
     for student_id, (_, zfile) in zipfiles.items():
         saiten = {}
         for i in range(args.num_tasks):
@@ -690,41 +695,40 @@ def main(args=None):
 
         # zip内のファイルを1つずつ参照
         # timestampの対策のため、コードを分割する
-        with zipfile.ZipFile(zfile) as data:
-            for name in data.namelist():
-                try:
-                    ex_num, name_check = detect_exercise_num(name)
+        for name in sorted(os.listdir(zfile)):
+            try:
+                ex_num, name_check = detect_exercise_num(name)
 
-                    if ex_num == -1 or ex_num >= len(compilers):
-                        continue
+                if ex_num == -1 or ex_num >= len(compilers):
+                    continue
+                
+                # cp to tmp directory                            
+                file_path = os.path.join(extract_dir, name)
+                origin_path = zfile+"/"+name
+                shutil.copyfile(origin_path, file_path)
 
-                    data.extract(name, path=extract_dir)
-
-                    # get timestamp
-                    info = data.getinfo(name)
-                    d = info.date_time
-
-                    # 辞書に書きこんでおく
-                    program_info = dict()
-                    program_info['task'] = ex_num
-                    program_info['file_path'] = os.path.join(extract_dir, name)
-                    program_info['timestamp'] = datetime.datetime(d[0], d[1], d[2], d[3], d[4], d[5])
-                    program_info['name_check'] = name_check
-                    if verify.get(ex_num) is None:
-                        verify[ex_num] = []
+                # 辞書に書きこんでおく
+                program_info = dict()
+                program_info['task'] = ex_num
+                program_info['file_path'] = file_path
+                # get timestamp
+                program_info['timestamp'] =  datetime.datetime.fromtimestamp(pathlib.Path(origin_path).stat().st_ctime)
+                program_info['name_check'] = name_check
+                if verify.get(ex_num) is None:
+                    verify[ex_num] = []
                     verify[ex_num].append(program_info)
 
-                    # pptx なら展開
-                    if compilers[ex_num].is_pptx:
-                        shutil.copy2(os.path.join(extract_dir, name), os.path.join(args.output_dir, student_id + name))
-                        continue
-                except KeyboardInterrupt:
-                    print('強制終了します')
-                    sys.exit(0)
-                except Exception as e:
-                    print(e)
-                    traceback.print_exc()
-                    print('原因不明')
+                # pptx なら展開
+                if compilers[ex_num].is_pptx:
+                    shutil.copy2(os.path.join(extract_dir, name), os.path.join(args.output_dir, student_id + name))
+                    continue
+            except KeyboardInterrupt:
+                print('強制終了します')
+                sys.exit(0)
+            except Exception as e:
+                print(e)
+                traceback.print_exc()
+                print('原因不明')
 
         prev, program_info = None, None
         with open(os.path.join(args.output_dir, '{}_{}.html'.format('out', student_id)), 'w') as out_file:
