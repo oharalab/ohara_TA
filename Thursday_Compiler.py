@@ -561,11 +561,11 @@ def detect_exercise_num(file_path, offset=-1):
     :return: 課題番号. 課題番号がない場合は-1.
     """
 
-    filename = os.path.split(file_path)[1]
-    if not filename:
-        return -1, None
+    #filename = os.path.split(file_path)[1]
+    #if not filename:
+    #    return -1, None
 
-    match_obj = re.search('(ex)?[0-9]{1,2}_([0-9])\.(\w+)$', filename)
+    match_obj = re.search('(ex)?[0-9]{1,2}_([0-9])\.(\w+)$', file_path)
     if isinstance(match_obj, type(None)):
         return -1, None
 
@@ -575,7 +575,7 @@ def detect_exercise_num(file_path, offset=-1):
     if not file_path.startswith('_'):
         if re.match(ext, 'c(pp)?') is not None or ext == 'pptx':
             if not ex_check:
-                print('Warning: File does not starts with "ex". {}'.format(filename))
+                print('Warning: File does not starts with "ex". {}'.format(file_path))
             exercise_num = int(basename)
             return exercise_num + offset, ex_check
         else:
@@ -667,22 +667,32 @@ def main(args=None):
 
     # 正確には zip ではないが，Friday 側との互換性のため変数名は zipfiles
     zipfiles = {}
-    for zfile in sorted(glob.glob(args.zip+"/*")):
-        student_id = os.path.basename(zfile)
-        assert student_id in students, "履修者名簿にない学籍番号です．チェックしてください．"
-        try:
-            submit_id = int(m.group(2))
-        except:
-            submit_id = 1
+    for exercise in sorted(glob.glob(args.zip+"/*")):
+        if "ex"+str(args.exercise) not in os.path.basename(exercise_path):
+            continue
 
-        if zipfiles.get(student_id) is None:
-            zipfiles[student_id] = (submit_id, zfile)
-        else:
-            if zipfiles[student_id][0] < submit_id:
-                zipfiles[student_id] = (submit_id, zfile)
+        for name_file in sorted(glob.glob(exercise+"/*")):
+            student_id = os.path.basename(name_file)
+            assert student_id in students, "履修者名簿にない学籍番号です．チェックしてください．"
+            program_file, submit_id = "", 0
+            for p_file in sorted(glob.glob(exercise+"/"+student_id+"/*")):
+                try:
+                    m = re.search('([0-9]{8})_a[0-9]{7}_([0-9]{2})', os.path.basename(p_file))
+                    temp_id = int(m.group(2))
+                except:
+                    temp_id = 1
+                if temp_id > submit_id:
+                    submit_id = temp_id
+                    program_file = p_file
+                
+            #print(student_id, submit_id)
+            if student_id not in zipfiles:
+                zipfiles[student_id] = [(submit_id, program_file)]
+            else:
+                zipfiles[student_id].append((submit_id, program_file))
 
     student_ids = sorted(zipfiles.keys())
-    for student_id, (_, zfile) in zipfiles.items():
+    for student_id, zfiles in zipfiles.items():
         saiten = {}
         for i in range(args.num_tasks):
             saiten.update({'ex%d' % (i + 1): 0})
@@ -695,24 +705,25 @@ def main(args=None):
 
         # zip内のファイルを1つずつ参照
         # timestampの対策のため、コードを分割する
-        for name in sorted(os.listdir(zfile)):
+        for submit_id, program_file in zfiles:
+            #print(submit_id, program_file)
             try:
+                name = os.path.basename(program_file)
                 ex_num, name_check = detect_exercise_num(name)
-
+                
                 if ex_num == -1 or ex_num >= len(compilers):
                     continue
                 
                 # cp to tmp directory                            
                 file_path = os.path.join(extract_dir, name)
-                origin_path = zfile+"/"+name
-                shutil.copyfile(origin_path, file_path)
+                shutil.copyfile(program_file, file_path)
 
                 # 辞書に書きこんでおく
                 program_info = dict()
                 program_info['task'] = ex_num
                 program_info['file_path'] = file_path
                 # get timestamp
-                program_info['timestamp'] =  datetime.datetime.fromtimestamp(pathlib.Path(origin_path).stat().st_ctime)
+                program_info['timestamp'] =  datetime.datetime.fromtimestamp(pathlib.Path(program_file).stat().st_ctime)
                 program_info['name_check'] = name_check
                 if verify.get(ex_num) is None:
                     verify[ex_num] = []
