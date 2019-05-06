@@ -2,7 +2,7 @@ import argparse
 import os
 
 parser = argparse.ArgumentParser()
-parser.add_argument('-m', '--max_score', default=0.9,
+parser.add_argument('-m', '--max_score', default=1.0,
                     help='the score is needed to get the max score 5. The desirable value is 1; however some wrong cases happen.')
 parser.add_argument('-s', '--score_rate', default=0.3,
                     help='the score is needed to get 4 score by rate * max_score')
