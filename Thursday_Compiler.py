@@ -668,7 +668,7 @@ def main(args=None):
     # 正確には zip ではないが，Friday 側との互換性のため変数名は zipfiles
     zipfiles = {}
     for exercise in sorted(glob.glob(args.zip+"/*")):
-        if "ex"+str(args.exercise) not in os.path.basename(exercise_path):
+        if "ex"+str(args.exercise) not in os.path.basename(exercise):
             continue
 
         for name_file in sorted(glob.glob(exercise+"/*")):
@@ -864,6 +864,7 @@ if __name__ == "__main__":
     parser.add_argument('-e', '--exercise', help='', default=4, type=int)
     parser.add_argument('--exercise_path', help='', default='./exercise/ex%d')
     parser.add_argument('-s', '--students', help='', default='./students.txt')
+    parser.add_argument('-c', '--csv', help='make csv', default=True)
 
     args = parser.parse_args()
 
@@ -874,3 +875,7 @@ if __name__ == "__main__":
         os.makedirs(args.output_dir)
 
     main(args)
+    
+    subprocess.call(["rm", "-r", args.tmp])
+    if args.csv:
+        subprocess.call(["python3", "make_csv.py"])
