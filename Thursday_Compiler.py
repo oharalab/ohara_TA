@@ -105,7 +105,7 @@ def read_html_body(filename, encoding="utf8"):
 def read_html_answer(filename, encoding="utf8"):
     with open(filename, 'r', encoding=encoding, errors="ignore")as f:
         result = f.read()
-    print(result)
+    #print(result)
     return result
 
 def score_BLUE(first, second):
@@ -200,8 +200,8 @@ def compare(pre, ans, method="full"):
 def calc_BLEU(first, second, delimiter, weights = 5, N=4, method="doc"): # N value is normally 4
     first = split_string(first, delimiter, method)
     second = split_string(second, delimiter, method)
-    print("first", first)
-    print("second", second)
+    #print("first", first)
+    #print("second", second)
     if method=="doc":
         scores = []
         pena = BP(len(first), len(second))
@@ -391,6 +391,7 @@ def write_trials(results, answers, task, out_file):
             score = score / max_score
             scores.append(score)
             out_file.write("<!-- score "+ str(score) +" -->")
+		
     if len(scores) != 0:
         ave_score = sum(scores)/len(scores)
         #print(scores)
@@ -565,8 +566,14 @@ def detect_exercise_num(file_path, offset=-1):
     #if not filename:
     #    return -1, None
 
-    match_obj = re.search('(ex)?[0-9]{1,2}_([0-9])\.(\w+)$', file_path)
+    match_obj = re.search('(ex)?[0-9]{1,2}.([0-9])\.(\w+)$', file_path)
     if isinstance(match_obj, type(None)):
+        match_obj = re.search('([0-9])\.(\w+)$', file_path)
+        basename = match_obj.group(1)
+        exercise_num = int(basename)
+        ext = match_obj.group(2)
+        if re.match(ext, 'c(pp)?'):
+            return exercise_num + offset, False
         return -1, None
 
     ex_check = match_obj.group(1) == 'ex'
@@ -690,7 +697,7 @@ def main(args=None):
                 zipfiles[student_id] = [(submit_id, program_file)]
             else:
                 zipfiles[student_id].append((submit_id, program_file))
-
+ 
     student_ids = sorted(zipfiles.keys())
     for student_id, zfiles in zipfiles.items():
         saiten = {}
@@ -702,7 +709,7 @@ def main(args=None):
 
         if not os.path.exists(extract_dir):
             os.makedirs(extract_dir)
-
+        
         # zip内のファイルを1つずつ参照
         # timestampの対策のため、コードを分割する
         for submit_id, program_file in zfiles:
@@ -797,6 +804,7 @@ def main(args=None):
                 try:
                     if verify.get(i) is None:
                         write_not_submitted(out_file)
+                        out_file.write('<!-- class="code length" code length '+ str(0) +" -->")
                         continue
                     if i > 0:
                         prev = program_info
