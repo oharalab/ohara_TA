@@ -39,6 +39,8 @@ for target in target_htmls:
                 line = float(line)
                 #print(line)
                 scores.append(line)
+            if len(code_length) > len(scores) + 1:
+                scores.append(0)
         code_length = [code_length[i] if i < len(code_length) else 0 for i in range(4)]
         scores = [scores[i] if i < len(scores) else 0 for i in range(4)]
         score_dict[student_id] = [code_length, scores]
