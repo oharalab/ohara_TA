@@ -1,0 +1,82 @@
+<html>
+<head>
+  <title>実習課題4_2</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=shift_jis">
+</head>
+
+<body bgcolor="#000000" text="#FFFFFF" vlink="#00FF00" link="#99FFCC">
+
+
+<h2>実習課題4_2</h2>
+<hr>
+
+<p>
+<b>【正方行列の掛け算】</b><br /><br />
+ex4_1.c を参考に，n×n 整数正方行列同士の積を求める関数 sqmat_multi() および n×n 整数正方行列を<br>
+表示する関数 print_sqmat() を実装することで，以下のプログラム ex4_2.c を完成させよ．<br>
+なお，関数 sqmat_multi() は n×n 整数正方行列 m1 と m2 の掛け算の結果を n×n 整数正方行列 ans<br>
+に保存する関数である．<br>
+ans[i][j] は 行列 m1 の i 行目と行列 m2 の j 列目の内積の値となる．<br>
+ただし，ex4_1.c で実装した関数 dot() は使わないこと．<br>
+
+</p>
+
+<pre>
+/*
+ * ex4_2.c
+ */
+#include <stdio.h>
+
+#define dim 2
+
+void print_sqmat(int v[][dim]);
+void sqmat_multi(int m1[][dim], int m2[][dim], int ans[][dim]);
+
+int main(){
+    int m1[dim][dim] = {{2, 5}, {1, 3}};
+    int m2[dim][dim] = {{3, -5}, {-1, 2}};
+    int e[dim][dim] = {{1, 0}, {0, 1}};
+    int ans[dim][dim] = {};
+	
+    print_sqmat(m1);
+    print_sqmat(m2);
+    sqmat_multi(m1, e, ans);
+    print_sqmat(ans);
+    sqmat_multi(m2, e, ans);
+    print_sqmat(ans);
+    sqmat_multi(m1, m2, ans);
+    print_sqmat(ans);
+	
+    return 0;
+}
+</pre>
+
+<br /><div class="result">
+実行結果例：<br /><hr style="height:1px"/>
+
+<pre>
+2x2行列
+  2  5
+  1  3
+2x2行列
+  3 -5
+ -1  2
+2x2行列
+  2  5
+  1  3
+2x2行列
+  3 -5
+ -1  2
+2x2行列
+  1  0
+  0  1
+</pre>
+
+</p>
+
+<p>　</p>
+<p>　</p>
+<p>　</p>
+
+</body>
+</html>
