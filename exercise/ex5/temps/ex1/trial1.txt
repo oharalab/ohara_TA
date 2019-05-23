@@ -1,4 +1,3 @@
 ABCD
 AOYAMA*U*AC*JP
 oHARA
-     ← プログラムの終了は Ctrl + D
