@@ -1,0 +1,53 @@
+<html>
+<head>
+  <title>実習課題5_3</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=shift_jis">
+</head>
+
+<body bgcolor="#000000" text="#FFFFFF" vlink="#00FF00" link="#99FFCC">
+
+
+<h2>実習課題5_3</h2>
+<hr>
+
+<p>
+<b>【曜日を表示する】</b><br /><br />
+実習課題3_3を参考に2000年以降の西暦，月，日を別々に数値として入力すると，その年の何日目であるのかと<br>
+曜日を表示するプログラムを作成せよ．<br />
+以下の 実行結果例のようになるようプログラミングを行なうこと．<br />
+なお，以下の2つの配列をグローバル変数として宣言して利用すること．<br>
+また，実習課題3_3 で実装した関数 int isLeapYear() を利用し，関数 getDays() に関しては，<br>
+配列 days を利用したものに内容を変更したうえで利用すること．<br>
+
+<pre>
+int days[12]={31,28,31,30,31,30,31,31,30,31,30,31};
+char weekname[7][10]={
+	"sunday","monday","tuesday", "wednesday", "thursday","friday", "saturday"};
+</pre>
+なお，二次元配列で文字列を扱う場合，printf関数では1つ目の添え字だけを指定する．<br>
+たとえば，
+<pre>
+　　printf("%s", weekname[0]); 
+</pre>
+とすると，sunday が表示される．
+ 
+<br /><div class="result">
+実行結果例（赤文字がキーボードからの入力）：<br /><hr style="height:1px"/>
+<pre>
+西暦を入力してください（2000年以降）：<font color="#FF0000">2019</font>
+月を入力してください：<font color="#FF0000">5</font>
+日を入力してください：<font color="#FF0000">16</font>
+2019年での5月16日はその年の136日目で曜日はthursdayです．
+</pre>
+
+<br />
+
+
+</p>
+
+<p>　</p>
+<p>　</p>
+<p>　</p>
+
+</body>
+</html>
