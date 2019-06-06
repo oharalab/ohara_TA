@@ -1,0 +1,96 @@
+<html>
+<head>
+  <title>実習課題7_2</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=shift_jis">
+</head>
+
+<body bgcolor="#000000" text="#FFFFFF" vlink="#00FF00" link="#99FFCC">
+
+
+<h2>実習課題7_2</h2>
+<hr>
+
+<p>
+<b>【構造体変数と構造体配列の関数利用時の違い】</b><br /><br />
+以下のプログラム ex7_2.c を実装し，その実行結果を確認せよ．<br>
+そのうえで，2つの関数 clear1() と clear2() が何をする関数なのか，<br>
+その実行結果が main() 関数における構造体変数 data に与える影響の違いは何かを<br>
+よく観察し，それらについて Word のファイルに文章でまとめよ．<br>
+Word ファイルのファイル名は ex7_2.docx とし，ファイルの冒頭には以下を必ず記入すること．<br>
+
+<pre>
+実習課題7_2 に対する回答
+学生番号：〇〇〇
+氏名：〇〇〇
+</pre>
+
+<a href="ex7_2.c">ex7_2.c</a> (右のリンクを右クリックしソースファイルを保存して利用してもよい）
+<pre>
+#include&lt;stdio.h&gt;
+#include&lt;string.h&gt;
+
+typedef struct {
+    char name[30];
+    int age;
+    int grade;
+    double gpa;
+} personal_data;
+
+void print_data(personal_data d);
+void clear1(personal_data d);
+void clear2(personal_data d[]);
+
+int main() {
+    personal_data data[5] = {"Aoyama Taro", 20, 2, 3.0};
+	
+    printf("in main\n");
+    print_data(data[0]);
+
+    clear1(data[0]);
+	
+    printf("in main\n");
+    print_data(data[0]);
+
+    clear2(data);
+	
+    printf("in main\n");
+    print_data(data[0]);
+
+    return(0);
+}
+
+void clear1(personal_data d){
+    d.name[0] = '\0';
+    d.age = 0;
+    d.grade = 0;
+    d.gpa = 0.0;
+	
+    printf("in clear1\n");
+    print_data(d);
+}
+
+void clear2(personal_data d[]){
+    d[0].name[0] = '\0';
+    d[0].age = 0;
+    d[0].grade = 0;
+    d[0].gpa = 0.0;
+
+    printf("in clear2\n");
+    print_data(d[0]);
+}
+
+void print_data(personal_data d){
+    printf("氏名：%s\n", d.name);
+    printf("年齢：%d\n", d.age);
+    printf("学年：%d\n", d.grade);
+    printf("GPA：%.2f\n", d.gpa);
+    printf("\n");
+}
+</pre>
+
+<p>　</p>
+<p>　</p>
+<p>　</p>
+
+</body>
+</html>
