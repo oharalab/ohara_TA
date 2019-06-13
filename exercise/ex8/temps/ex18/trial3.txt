@@ -1,0 +1,4 @@
+$ ファイル名を入力してください：test.pnm
+埋め込む文字列を指定してください：Aoyama
+マジックナンバーを入力してください：The minimum interval is 10
+ 

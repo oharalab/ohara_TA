@@ -1,13 +1,1 @@
-Aoyama Taro
-20
-2
-3.0
-Aoyama Hanako
-19
-2
-3.2
-Aoyama Jiro
-22
-3
-1.2
-end
+hoge.csv

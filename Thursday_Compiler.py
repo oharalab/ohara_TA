@@ -675,7 +675,8 @@ def main(args=None):
     # 正確には zip ではないが，Friday 側との互換性のため変数名は zipfiles
     zipfiles = {}
     for exercise in sorted(glob.glob(args.zip+"/*")):
-        if "ex"+str(args.exercise) not in os.path.basename(exercise):
+        if "ex"+str(args.exercise) not in os.path.basename(exercise) or \
+            os.path.basename(exercise)[-1] in args.use_exercise:
             continue
 
         for name_file in sorted(glob.glob(exercise+"/*")):
@@ -825,13 +826,13 @@ def main(args=None):
                         print('Cannot convert encoding')
 
                     # 対象ソースコードをコンパイル
-                    ret, msg = compiler.compile(program_info['file_path'], student_id)
+                    ret, msg = compiler.compile(program_info['file_path'], student_id +"_ex" + str(i))
                     if not ret:
                         saiten['ex%d' % (i + 1)] = 2
                         program_info['status'] = 'NG (Compile Error)'
                     else:
                         # 対象プログラムを実行
-                        results = compiler.execute(student_id)
+                        results = compiler.execute(student_id +"_ex" + str(i))
                         saiten['ex%d' % (i + 1)] = 5
                         program_info['status'] = 'OK' if program_info['name_check'] else 'NG (Naming rule)'
                 except Exception as e:
@@ -869,12 +870,17 @@ if __name__ == "__main__":
     parser.add_argument('-n', '--num_tasks', help='number of tasks', default=4, type=int)
     parser.add_argument('-d', '--debug', help='debug mode', default=False, type=bool)
     parser.add_argument('-o', '--output_dir', help='output directory', default='./output')
-    parser.add_argument('-e', '--exercise', help='', default=4, type=int)
-    parser.add_argument('--exercise_path', help='', default='./exercise/ex%d')
-    parser.add_argument('-s', '--students', help='', default='./students.txt')
+    parser.add_argument('-e', '--exercise', help='the number of exersice', default=4, type=int)
+    parser.add_argument('-u', '--use_exercise', help='use exercie num', default=None, type=str)
+    parser.add_argument('--exercise_path', help='the directory of exercise', default='./exercise/ex%d')
+    parser.add_argument('-s', '--students', help='the path of student file', default='./students.txt')
     parser.add_argument('-c', '--csv', help='make csv', default=True)
 
     args = parser.parse_args()
+    if args.use_exercise is None:
+        args.use_exercise = [i for i in range(1, args.num_tasks+1)]
+    else:
+        args.use_exercise = list(map(int, args.use_exercise.split("+")))
 
     if not os.path.exists(args.tmp):
         os.makedirs(args.tmp)

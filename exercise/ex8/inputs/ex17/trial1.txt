@@ -1,0 +1,4 @@
+./ex8_17.exe
+2019
+6
+cat Calendar_2019_6.txt

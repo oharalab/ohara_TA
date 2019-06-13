@@ -1,0 +1,87 @@
+<html>
+<head>
+  <title>実習課題8_14</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=shift_jis">
+</head>
+
+<body bgcolor="#000000" text="#FFFFFF" vlink="#00FF00" link="#99FFCC">
+
+
+<h2>実習課題8_14</h2>
+<hr>
+
+<p>
+<b>【指定した年月日までのその年での日数】</b><br /><br />
+実習課題8_13 作成した ex8_13.c に，指定した年月日までの年における日数（その日を含む）を求める<br>
+関数 countDays() を実装し，以下のプログラム ex8_14.c を完成させよ．<br>
+なお，ex8_14.c は以下の部分に各関数の定義を加えるのみとし，以下に示している部分に<br>
+関しては，一切の変更・追記は認めない．<br>
+<font color="#FF0000">以下の部分が変更・追記されたプログラムは正しく動作しても 0 点とする．</font><br>
+
+
+<pre>
+#include&lt;stdio.h&gt;
+#include&lt;ctype.h&gt;
+#include&lt;string.h&gt;
+#include&lt;stdlib.h&gt;
+
+#define BUFSIZE 128
+
+int days[] = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
+char day_of_week[7][10]={
+	"sunday","monday","tuesday", "wednesday", "thursday","friday", "saturday"};
+
+void getInput(char msg[], char n[]);
+int isInt(char n[]);
+int getYear(void);
+int getMonth(void);
+int getDay(int y, int m);
+int getDays(int y, int m);
+int isLeapYear(int y);
+int getDayOfWeekForFirstDay(int y);
+int countDays(int y, int m, int d);
+
+int main(){
+	int year, month, day, dow_first, days_in_year;
+	
+	year = getYear();
+	printf("西暦：%d\n", year);
+	month = getMonth();
+	printf("月：%d\n", month);
+	day = getDay(year, month);
+	printf("日：%d\n", day);
+	dow_first = getDayOfWeekForFirstDay(year);
+	printf("%d年の1月1日の曜日は %s\n", year, day_of_week[dow_first]);
+	days_in_year = countDays(year, month, day);
+	printf("%d年%d月%d日はその年の%d日目\n", year, month, day, days_in_year);
+
+	return 0;
+}
+
+</pre>
+<br>
+
+
+<br /><div class="result">
+実行例（赤文字がキーボードからの入力）：<br /><hr style="height:1px"/>
+<pre>
+$ <font color="#FF0000">./ex8_14.exe</font>
+西暦を入力してください（2000年以降）：<font color="#FF0000">2019</font>
+西暦：2019
+月を入力してください：<font color="#FF0000">6</font>
+月：6
+日を入力してください：<font color="#FF0000">6</font>
+日：6
+2019年の1月1日の曜日は tuesday
+2019年6月6日はその年の157日目
+</pre>
+<br />
+
+</p>
+
+<p>　</p>
+<p>　</p>
+<p>　</p>
+
+</body>
+</html>
