@@ -8,6 +8,7 @@ parser.add_argument('-s', '--score_rate', default=0.3,
                     help='the score is needed to get 4 score by rate * max_score')
 parser.add_argument('-l', '--code_length_rate', default=0.5,
                     help='the score is needed to get 2 score by rate * code_length that the almost correct code has')
+parser.add_argument('-c', '--candidates', default='configs/candidates.txt')
 
 args = parser.parse_args()
 
@@ -73,8 +74,44 @@ code_len_rate = float(args.code_length_rate)
 score_rate = float(args.score_rate)
 max_score = float(args.max_score)
 
+with open(args.candidates, "r") as f:
+    cand_ids = [cand_id.replace("\n", "") for cand_id in f.readlines()]
+#print(cand_ids)
 
-with open("easy_score.csv", "w") as f:
+output_dir = "output_csv"
+with open(os.path.join(output_dir, "easy_score.csv"), "w") as f:
+	for cand_id in cand_ids:
+		key = cand_id
+		info = []
+		easy_scores = ["0"] * 4
+		if cand_id in score_dict:
+			value = score_dict[key]
+			code_len = value[0]
+			scores = value[1]
+			for i,score in enumerate(scores):
+				if score >= max_score:
+					#print(score, 5)
+					easy_scores[i] = "5"
+				elif score >= task_score[i] * score_rate:
+					#print(score, 4)
+					easy_scores[i] = "4"
+				elif score != 0:
+					#print(score, 3)
+					easy_scores[i] = "3"
+				elif code_len[i] == 0:
+					#print(score, code_len, 0)
+					easy_scores[i] = "0"
+				elif code_len[i] >= task_code[i] * code_len_rate:
+					#print(score, code_len, 2)
+					easy_scores[i] = "2"
+				else:
+					#print(score, code_len, 1)
+					easy_scores[i] = "1"
+		info.append(key)
+		info.extend(easy_scores)
+		f.write(",".join(info) + "\n")
+"""
+with open(os.path.join(output_dir, "easy_subscore.csv"), "w") as f:
     for key, value in score_dict.items():
         info = []
         code_len = value[0]
@@ -84,35 +121,6 @@ with open("easy_score.csv", "w") as f:
             if score >= max_score:
                 #print(score, 5)
                 easy_scores[i] = "5"
-            elif score >= task_score[i] * score_rate:
-                #print(score, 4)
-                easy_scores[i] = "4"
-            elif score != 0:
-                #print(score, 3)
-                easy_scores[i] = "3"
-            elif code_len[i] == 0:
-                #print(score, code_len, 0)
-                easy_scores[i] = "0"
-            elif code_len[i] >= task_code[i] * code_len_rate:
-                #print(score, code_len, 2)
-                easy_scores[i] = "2"
-            else:
-                #print(score, code_len, 1)
-                easy_scores[i] = "1"
-        info.append(key)
-        info.extend(easy_scores)
-        f.write(",".join(info) + "\n")
-
-with open("easy_subscore.csv", "w") as f:
-    for key, value in score_dict.items():
-        info = []
-        code_len = value[0]
-        scores = value[1]
-        easy_scores = [0] * 4
-        for i,score in enumerate(scores):
-            if score >= max_score:
-                #print(score, 5)
-                easy_scores[i] = "5"
             elif score != 0:
                 #print(score, 3)
                 easy_scores[i] = "3"
@@ -125,3 +133,4 @@ with open("easy_subscore.csv", "w") as f:
         info.append(key)
         info.extend(easy_scores)
         f.write(",".join(info) + "\n")
+"""

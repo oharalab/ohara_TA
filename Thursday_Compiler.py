@@ -20,17 +20,15 @@ from subprocess import PIPE
 import sys
 import time
 import traceback
-from utils import zen2han
+from utils.japanese_converter import zen2han
+from utils.reader import *
+from utils.score_calculation import *
+from utils.tools import *
+from utils.writer import *
 import zipfile
 
 if sys.version_info[0] != 3:
     raise NotImplementedError('Not supported. Please use Python 3.x')
-
-# nkf のインストールが必要な場合あり，ディレクトリは環境依存
-if sys.platform == 'cygwin':
-	NKF_BIN = './bin/nkf32.exe'
-else:
-	NKF_BIN = 'nkf'
 
 GCC_BIN = '/usr/bin/gcc'
 
@@ -72,348 +70,6 @@ MODAL = '<button type="button" class="btn btn-outline-dark" data-toggle="modal" 
         '</div><!-- /.modal-content -->\n'\
         '</div><!-- /.modal-dialog -->\n'\
         '</div><!-- /.modal -->\n'
-
-
-def execute(args, stdout=PIPE, stdin=PIPE, stderr=PIPE, shell=False, desc=''):
-    """
-    :param args:
-    :param stdout:
-    :param stdin:
-    :param stderr:
-    :param shell:
-    :param desc:
-    :return:
-    """
-    if desc != '':
-        desc += '\t'
-        print(desc + ' '.join(args))
-    return subprocess.Popen(args, stdout=stdout, stdin=stdin, stderr=stderr, shell=shell)
-
-
-def read_html_body(filename, encoding="utf8"):
-    with open(filename, 'r', encoding="shift-jis") as f:
-        html_data = f.read().encode(encoding, errors="ignore").decode(encoding)
-    _, html_data = html_data.split('<body')
-    idx = html_data.find('>') + 1
-    html_data, _ = html_data[idx:].split('</body')
-    if "<div class=\"result\">" in html_data and "</div>" not in html_data:
-        html_data += "</div>"
-    #print(html_data)
-    return html_data
-
-
-def read_html_answer(filename, encoding="utf8"):
-    with open(filename, 'r', encoding=encoding, errors="ignore")as f:
-        result = f.read()
-    #print(result)
-    return result
-
-def score_BLUE(first, second):
-    first = first.lower()
-    second = second.lower()
-
-def split_sentence(sentence, delimiter):
-    return sentence.split(delimiter)
-
-def split_document(doc):
-    return doc.split("\n")
-
-def split_string(string, delimiter=" ",method="doc"):
-    string = string.lower().replace(" ", "").replace("\t", "")
-    #string = string.replace("-", "").replace(".", " .").replace(",", " ,")\
-    #        .replace("(", " ( ").replace(")", " ) ").replace("[", " [ ").replace("]", " ] ")
-    doc = split_document(string)
-    stop_words = ["\n", "\r", ""]
-    morphs = []
-    for sentence in doc:
-        sentence = split_sentence(sentence, delimiter)
-        sentence = [word for word in sentence if word not in stop_words]
-        if method == "doc": # split document (all sentence)
-            morphs.extend(sentence)
-        else: # split every sentence
-            morphs.append(sentence)
-
-    return morphs
-
-def calc_information(worddict, method):
-    if method == "Huffman":
-        all_num = sum([value for value in worddict.values()])
-        keys = set(worddict.keys())
-        info = sum([len(key)*worddict[key]/all_num for key in keys])
-    else: # average word length
-        info = sum([len(key)*value for key,value in worddict.items()])
-    info = 1 / (info + 0.000001)
-    return info
-
-def calc_maxindex(information):
-    max_info = 0
-    index = 0
-    for i,info in enumerate(information):
-        if info > max_info:
-            max_info = info
-            index = i
-    return index
-
-def make_worddict(words):
-    word_dict = dict()
-    for word in words:
-        if word not in word_dict.keys():
-            word_dict[word] = 1
-        else:
-            word_dict[word] += 1
-    return word_dict
-
-def select_delimiter(doc, method = "Huffman"):
-    candidates = [" ", ":", ";", "=", "\"", "/", "+", "*"] + [chr(i) for i in range(97,97+26)]
-    information = []
-    for cand in candidates:
-        words = [word for sent in doc for word in sent.split(cand)]
-        word_dict = make_worddict(words)
-        info = calc_information(word_dict, method)
-        information.append(info)
-
-    index = calc_maxindex(information)
-    delimiter = candidates[index]
-    return delimiter
-
-def make_ngram(morphs, N):
-    return ["".join(morphs[i:i+N]) for i in range(0, len(morphs)-N+1)]
-
-def BP(c, r): # penaltiy
-    if c > r:
-        return 1
-    else:
-        c += 0.00001
-        return math.exp(1-r/c)
-
-def compare(pre, ans, method="full"):
-    if method == "full":
-        if pre == ans:
-            return 1
-        else:
-            return 0
-    else: # similar to multiple 1-gram score
-        mol = sum([1 if p == a else 0 for p in pre for a in ans])
-        den = len(pre) * len(ans)
-        return mol/den
-
-def calc_BLEU(first, second, delimiter, weights = 5, N=4, method="doc"): # N value is normally 4
-    first = split_string(first, delimiter, method)
-    second = split_string(second, delimiter, method)
-    #print("first", first)
-    #print("second", second)
-    if method=="doc":
-        scores = []
-        pena = BP(len(first), len(second))
-        for n in range(1, N+1):
-            first = make_ngram(first, n)
-            second = make_ngram(second, n)
-            pairs = [[f, s] for f in first for s in second]
-            #print(pairs)
-            mol = sum([compare(pair[0], pair[1]) for pair in pairs])
-            den = len(first) * len(second)
-            mol += 0.01 ** 2
-            den += 0.01
-            #print(mol, den, mol/den)
-            scores.append(math.log(mol/den*weights)/N)
-        #print(pena)
-        #print(scores)
-        #print(sum(scores))
-        #print(math.exp(sum(scores)))
-        return pena*math.exp(sum(scores))#- pena * math.exp(sum([math.log(0.000001)/n for n in range(1, N+1)]))
-    else:
-        print("sorry, it is not made yet")
-        #return [first, second]
-
-# if initially &amp; is used, default replace method makes incorrect text
-def replace_seq(text):
-
-    escape_seq = {
-        '&': '&amp;',
-        '<':  '&lt;',
-        '>': '&gt;',
-    }
-
-    for o, n in escape_seq.items():
-        text = text.replace(n, o)
-
-    for o, n in escape_seq.items():
-        text = text.replace(o, n)
-
-    return text
-
-
-def write_summary(timestamp, timestamp_status, file_path, status, out_file):
-    contents = '<table class="table table-bordered">\n' \
-               '<thead>\n' \
-               '<tr>\n' \
-               '<th></th>\n' \
-               '<th>Content</th>\n' \
-               '<th>Status</th>\n' \
-               '</tr>\n' \
-               '</thead>\n' \
-               '<tbody>\n' \
-               '<tr>\n' \
-               '<th>Timestamp</th>\n' \
-               '<td>{}</td>\n' \
-               '<td>{}</td>\n' \
-               '</tr>\n' \
-               '<tr>' \
-               '<th>Code</th>\n' \
-               '<td>{}</td>\n' \
-               '<td>{}</td>\n' \
-               '</tr>\n' \
-               '</tbody>\n' \
-               '</table>\n'
-
-    out_file.write(contents.format(
-        timestamp,
-        timestamp_status,
-        file_path,
-        status
-    ))
-
-
-def write_not_submitted(out_file):
-    write_summary('None', 'NG', 'Not found', 'NG', out_file)
-
-
-def write_program_info(program_info, out_file):
-    write_summary(
-        program_info['timestamp'].strftime("%c"),
-        program_info['timestamp_status'],
-        program_info['file_path'],
-        program_info['status'],
-        out_file)
-
-
-def write_code(src, out_file):
-    """
-    コードの内容をファイルに書き出す
-    :param src: path to source file
-    :param out_file: 書き込みファイル
-    :return:
-    """
-
-    out_file.write('<pre class="prettyprint linenums">\n')
-
-    ret = False
-    code_len = 0
-
-    try:
-        convert = execute([NKF_BIN, '-w', '--overwrite', src])
-        stdout, stderr = convert.communicate()
-        with open(src, 'r') as f:
-            for line in f.readlines():
-                line = replace_seq(line)
-                out_file.write(line)
-                code_len += len(line)
-
-    except Exception as e:
-        print(e)
-        traceback.print_exc()
-
-    out_file.write('</pre>\n')
-    out_file.write('<!-- class="code length" code length '+ str(code_len) +" -->")
-
-    return ret
-
-
-def write_trials(results, answers, task, out_file):
-    """
-    :param results: path to source file
-    :param answers: path to source file
-    :param task:
-    :param out_file: 書き込みファイル
-    :return:
-    """
-
-    answer = answers[task]
-    scores = []
-    for k, v in results.items():
-        out_file.write('<ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">\n')
-        out_file.write('<li class="nav-item">')
-        out_file.write('<a class="nav-link active" id="pills-home-tab" data-toggle="pill" href="#trial{0}_{1}" '
-                       'role="tab" aria-controls="pills-home" aria-selected="true">'
-                       'Trial {1}</a>\n'.format(task+1, k))
-        out_file.write('</li>')
-        if answer.get(k):
-            out_file.write('<li class="nav-item">')
-            out_file.write('<a class="nav-link" id="pills-profile-tab" data-toggle="pill" href="#answer{0}_{1}" '
-                           'role="tab" aria-controls="pills-profile" aria-selected="false">'
-                           'Answer</a>\n'.format(task+1, k))
-            out_file.write('</li>')
-        out_file.write('</ul>')
-
-        out_file.write('<div class="tab-content" id="pills-tabContent">')
-        out_file.write('<div class="tab-pane fade show active" id="trial{0}_{1}" role="tabpanel" '
-                       'aria-labelledby="pills-home-tab">'.format(task+1, k))
-
-        if v.get('stderr'):
-            out_file.write('<pre class="prettyprint linenums">\n')
-            v['stderr'] = replace_seq(zen2han(v['stderr']))
-            out_file.write('{}\n'.format(v['stderr']))
-            out_file.write('</pre>\n')
-        if v.get('std'):
-            out_file.write('<pre class="prettyprint linenums">\n')
-            v['std'] = replace_seq(zen2han(v['std']))
-            out_file.write('{}\n'.format(v['std']))
-            out_file.write('</pre>\n')
-        if v.get('file'):
-            out_file.write('<pre class="prettyprint linenums">\n')
-            v['file'] = replace_seq(zen2han(v['file']))
-            out_file.write('{}\n'.format(v))
-            out_file.write('</pre>\n')
-        out_file.write('</div>')
-
-        if answer.get(k):
-            out_file.write('<div class="tab-pane fade" id="answer{0}_{1}" role="tabpanel" '
-                           'aria-labelledby="pills-profile-tab">'.format(task+1, k))
-            if answer[k].get('std'):
-                out_file.write('<pre class="prettyprint linenums">\n')
-                answer[k]['std'] = replace_seq(zen2han(answer[k]['std']))
-                out_file.write('{}\n'.format(answer[k]['std']))
-                out_file.write('</pre>\n')
-            if answer[k].get('file'):
-                out_file.write('<pre class="prettyprint linenums">\n')
-                answer[k]['file'] = replace_seq(zen2han(answer[k]['file']))
-                out_file.write('{}\n'.format(v))
-                out_file.write('</pre>\n')
-            out_file.write('</div>')
-        out_file.write('</div>')
-
-        if v.get('std'):
-            delimiter = select_delimiter(split_string(answer[k]['std']))
-            max_score = calc_BLEU(answer[k]['std'], answer[k]['std'], delimiter, 4)
-            score = calc_BLEU(v['std'], answer[k]['std'], delimiter, 4)
-            #print(score)
-            #print(max_score)
-            score = score / max_score
-            scores.append(score)
-            out_file.write("<!-- score "+ str(score) +" -->")
-		
-    if len(scores) != 0:
-        ave_score = sum(scores)/len(scores)
-        #print(scores)
-        out_file.write('<!-- class="averagescore" average score '+ str(ave_score) +" -->")
-
-
-def write_error_msg(msg, out_file):
-    """
-    :param msg: path to source file
-    :param out_file: 書き込みファイル
-    :return:
-    """
-
-    out_file.write('<h5>Compile Message</h5>\n')
-    out_file.write('<pre class="prettyprint linenums">\n')
-    msg = replace_seq(msg)
-    out_file.write('{}\n'.format(msg))
-    out_file.write('</pre>\n')
-
-
-def save_pptx_as_pdf():
-    pass
 
 
 class Compiler(object):
@@ -499,8 +155,20 @@ class Compiler(object):
             out[i+1].update({'point': 0})
             cmd = ['./' + program]
             result = execute(cmd, desc='Exercise: %d Trial: %d' % (self.ex_num, i+1), shell=True)
+            
+            cat_option = None
+            with open(self.input_files[i], 'r') as f:
+                input_string = f.readlines()
+            if input_string[-1][:4] == "cat ":
+                cat_option = input_string[-1]
+                input_string = "\n".join(input_string[:-1])
+            else:
+                input_string = "\n".join(input_string)
+            input_string = input_string.encode()
+            #print(input_string, cat_option)
+            
             if len(self.input_files) > 0:
-                output, error = result.communicate(open(self.input_files[i], 'rb').read(), timeout=TIMEOUT_SEC)
+                output, error = result.communicate(input_string, timeout=TIMEOUT_SEC)
             else:
                 output, error = result.communicate(timeout=TIMEOUT_SEC)
 
@@ -517,7 +185,15 @@ class Compiler(object):
                         error = b'segmentation fault\n'
                     else:
                         error = b'return code %d\n' % result.returncode
-                out[i+1].update({'std': output.decode('utf-8', errors="ignore"), 'stderr': error.decode('utf-8')})
+                
+                cat_result = ""
+                if cat_option is not None:
+                    cat_result += subprocess.run(cat_option.split(), stdout = PIPE, stderr = PIPE).stdout.decode('utf-8', errors="ignore")
+                out[i+1].update({'std': output.decode('utf-8', errors="ignore")+cat_result, 'stderr': error.decode('utf-8')})
+                
+                if cat_option is not None:
+                    # cat 対象のファイルは一度消す（そうでないと，同じ結果が採点に使われるため）
+                    subprocess.call(["rm", cat_option.split()[-1]])
                 
                 out[i + 1].update({'point': 4})
                 if self.output_path is not None:
@@ -552,89 +228,50 @@ class Compiler(object):
                 print(e)
                 print('Fail to read output file: %s' % OUTPUT_FILE_NAME[self.ex_num])
             return None
-
-
-def detect_exercise_num(file_path, offset=-1):
-    """
-    課題番号を検出
-    :param file_path: 展開したファイルのパス
-    :param offset:
-    :return: 課題番号. 課題番号がない場合は-1.
-    """
-
-    #filename = os.path.split(file_path)[1]
-    #if not filename:
-    #    return -1, None
-
-    match_obj = re.search('(ex)?[0-9]{1,2}.([0-9])\.(\w+)$', file_path)
-    if isinstance(match_obj, type(None)):
-        match_obj = re.search('([0-9])\.(\w+)$', file_path)
-        basename = match_obj.group(1)
-        exercise_num = int(basename)
-        ext = match_obj.group(2)
-        if re.match(ext, 'c(pp)?'):
-            return exercise_num + offset, False
-        return -1, None
-
-    ex_check = match_obj.group(1) == 'ex'
-    basename = match_obj.group(2)
-    ext = match_obj.group(3)
-    if not file_path.startswith('_'):
-        if re.match(ext, 'c(pp)?') is not None or ext == 'pptx':
-            if not ex_check:
-                print('Warning: File does not starts with "ex". {}'.format(file_path))
-            exercise_num = int(basename)
-            return exercise_num + offset, ex_check
-        else:
-            return -1, ex_check
-
-
-def get_latest_program_info(program_info):
-    valid = False
-    name_checks = [program_info[i]['name_check'] for i in range(len(program_info))]
-    timestamps = [program_info[i]['timestamp'] for i in range(len(program_info))]
-
-    idx = 0
-    for i, (n, t) in enumerate(zip(name_checks, timestamps)):
-        if valid and not n:
+        
+def zip2dict(zip_filename, students):
+    # 正確には zip ではないが，Friday 側との互換性のため変数名は zipfiles
+    zipfiles = {}
+    for exercise in sorted(glob.glob(zip_filename+"/*")):
+        if "ex"+str(args.exercise) not in os.path.basename(exercise) or \
+            os.path.basename(exercise)[-1] not in args.use_exercise:
             continue
-        elif not valid and n:
-            valid = n
-            idx = i
-        else:
-            if timestamps[idx] < timestamps[i]:
-                idx = n
+        print("採点対象； {0}".format(exercise))
 
-    return program_info[idx]
+        for name_file in sorted(glob.glob(exercise+"/*")):
+            student_id = os.path.basename(name_file)
+            assert student_id in students, "履修者名簿にない学籍番号です．チェックしてください．"
+            program_file, submit_id = "", 0
+            for p_file in sorted(glob.glob(exercise+"/"+student_id+"/*")):
+                try:
+                    m = re.search('([0-9]{8})_a[0-9]{7}_([0-9]{2})', os.path.basename(p_file))
+                    temp_id = int(m.group(2))
+                except:
+                    temp_id = 1
+                if temp_id > submit_id:
+                    submit_id = temp_id
+                    program_file = p_file
+                
+            #print(student_id, submit_id)
+            if student_id not in zipfiles:
+                zipfiles[student_id] = [(submit_id, program_file)]
+            else:
+                zipfiles[student_id].append((submit_id, program_file))
+    
+    return zipfiles
 
-
+        
 def main(args=None):
     """
     :param args:
     :return:
     """
-    students = {}
-    with open(args.students) as f:
-        for line in f.readlines():
-            s, n = line.strip().split(' ')
-            students[s] = n
-
+    students = get_students(args.students)
     exercise_path = args.exercise_path % args.exercise
     answers_path = os.path.join(exercise_path, 'answers')
     temp_path = os.path.join(exercise_path, 'temps')
     exercise_sentences_path = os.path.join(exercise_path, 'sentences')
-
-    exercise_sentences_files = glob.glob(os.path.join(exercise_sentences_path, '*'))
-    if len(exercise_sentences_files) == 1:
-        filename = exercise_sentences_files[0]
-        if os.path.splitext(filename)[1] == '.zip':
-            with zipfile.ZipFile(filename) as zfile:
-                zfile.extractall(path=exercise_sentences_path)
-    elif len(exercise_sentences_files) < 1:
-        raise FileNotFoundError('No files in exercise path')
-    else:
-        pass
-
+    unzip_sentences_files(exercise_sentences_path)
     input_files_path = os.path.join(exercise_path, 'inputs')
     output_files_path = os.path.join(exercise_path, 'outputs')
 
@@ -672,32 +309,8 @@ def main(args=None):
     # 辞書初期化
     scoring = collections.OrderedDict()
 
-    # 正確には zip ではないが，Friday 側との互換性のため変数名は zipfiles
-    zipfiles = {}
-    for exercise in sorted(glob.glob(args.zip+"/*")):
-        if "ex"+str(args.exercise) not in os.path.basename(exercise) or \
-            os.path.basename(exercise)[-1] in args.use_exercise:
-            continue
-
-        for name_file in sorted(glob.glob(exercise+"/*")):
-            student_id = os.path.basename(name_file)
-            assert student_id in students, "履修者名簿にない学籍番号です．チェックしてください．"
-            program_file, submit_id = "", 0
-            for p_file in sorted(glob.glob(exercise+"/"+student_id+"/*")):
-                try:
-                    m = re.search('([0-9]{8})_a[0-9]{7}_([0-9]{2})', os.path.basename(p_file))
-                    temp_id = int(m.group(2))
-                except:
-                    temp_id = 1
-                if temp_id > submit_id:
-                    submit_id = temp_id
-                    program_file = p_file
-                
-            #print(student_id, submit_id)
-            if student_id not in zipfiles:
-                zipfiles[student_id] = [(submit_id, program_file)]
-            else:
-                zipfiles[student_id].append((submit_id, program_file))
+    # 正確には zipfile ではなく，構造を展開して dict 化したもの
+    zipfiles = zip2dict(args.zip, students)
  
     student_ids = sorted(zipfiles.keys())
     for student_id, zfiles in zipfiles.items():
@@ -865,31 +478,40 @@ def main(args=None):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('-z', '--zip', help='path to zip', default='./zip')
-    parser.add_argument('-t', '--tmp', help='path to tmp', default='./tmp')
-    parser.add_argument('-n', '--num_tasks', help='number of tasks', default=4, type=int)
-    parser.add_argument('-d', '--debug', help='debug mode', default=False, type=bool)
-    parser.add_argument('-o', '--output_dir', help='output directory', default='./output')
-    parser.add_argument('-e', '--exercise', help='the number of exersice', default=4, type=int)
-    parser.add_argument('-u', '--use_exercise', help='use exercie num', default=None, type=str)
-    parser.add_argument('--exercise_path', help='the directory of exercise', default='./exercise/ex%d')
-    parser.add_argument('-s', '--students', help='the path of student file', default='./students.txt')
     parser.add_argument('-c', '--csv', help='make csv', default=True)
+    parser.add_argument('-d', '--debug', help='debug mode', default=False, type=bool)    
+    parser.add_argument('-e', '--exercise', help='the number of exersice', default=4, type=int)
+    parser.add_argument('--exercise_path', help='the directory of exercise', default='./exercise/ex%d')
+    parser.add_argument('--execution_dir', help='the directory of execution (test) environment', default='./execution_dir')
+    parser.add_argument('--input_dir', help='input files in this dir that is needed to execute program properly',
+                        default='./configs/inputs')
+    parser.add_argument('-n', '--num_tasks', help='number of tasks', default=4, type=int)
+    parser.add_argument('-o', '--output_dir', help='output directory', default='./output')
+    parser.add_argument('-s', '--students', help='the path of student file', default='./configs/students.txt')
+    parser.add_argument('-t', '--tmp', help='path to tmp', default='./tmp')
+    parser.add_argument('-u', '--use_exercise', help='use exercie num (e.g. 1+2+3)', default=None, type=str)
+    parser.add_argument('-z', '--zip', help='path to zip', default='./zip')
 
     args = parser.parse_args()
     if args.use_exercise is None:
-        args.use_exercise = [i for i in range(1, args.num_tasks+1)]
+        args.use_exercise = [str(i) for i in range(1, args.num_tasks+1)]
     else:
-        args.use_exercise = list(map(int, args.use_exercise.split("+")))
+        args.use_exercise = args.use_exercise.split("+")
+    print(args.use_exercise)
+    
+    for filename in os.listdir(args.input_dir):
+        subprocess.call(["rm", filename])
+        subprocess.call(["cp", os.path.join(args.input_dir, filename), filename])
+        subprocess.call(["chmod", "444", filename])
 
-    if not os.path.exists(args.tmp):
-        os.makedirs(args.tmp)
-
-    if not os.path.exists(args.output_dir):
-        os.makedirs(args.output_dir)
+    subprocess.call(["rm", "-r", args.tmp])
+    os.makedirs(args.tmp)
+    
+    subprocess.call(["rm", "-r", args.output_dir])
+    os.makedirs(args.output_dir)
 
     main(args)
     
-    subprocess.call(["rm", "-r", args.tmp])
+    
     if args.csv:
-        subprocess.call(["python3", "make_csv.py"])
+        subprocess.call(["python3", "other_tools/make_csv.py"])

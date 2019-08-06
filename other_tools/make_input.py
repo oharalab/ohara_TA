@@ -123,7 +123,7 @@ def make_answers(unzip_path, input_path, temp_path):
             print()
 
 def make_contents(origin_path, target_path):
-    target_dir = "exercise/"
+    target_dir = "../exercise/"
     unzip_path = target_path
     target_path = target_dir+target_path[:-2]
     input_path = target_path + "/inputs"
