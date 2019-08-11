@@ -1,4 +1,3 @@
-./ex8_18.exe
 test.pnm
 Aoyama Gakuin
 1001

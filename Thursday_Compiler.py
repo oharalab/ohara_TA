@@ -41,7 +41,7 @@ INF_MESSAGE = '''プログラムが終了しませんでした
 '''
 
 # 無限ループを判定する猶予
-TIMEOUT_SEC = 1
+TIMEOUT_SEC = 2
 
 
 HEADER = '<head>\n'\
@@ -130,7 +130,7 @@ class Compiler(object):
         """
         ret = True
         cmd = self.gcc.copy()
-        cmd.extend(['-o', out, src])
+        cmd.extend(['-o', out, src]) #gcc option:"-std=c11"
         result = execute(cmd)
         _, stderr = result.communicate()
         error_msg = stderr.decode('utf-8')
@@ -153,24 +153,35 @@ class Compiler(object):
             if out.get(i+1) is None:
                 out[i+1] = {}
             out[i+1].update({'point': 0})
-            cmd = ['./' + program]
-            result = execute(cmd, desc='Exercise: %d Trial: %d' % (self.ex_num, i+1), shell=True)
-            
+
             cat_option = None
             with open(self.input_files[i], 'r') as f:
                 input_string = f.readlines()
-            if input_string[-1][:4] == "cat ":
+            if len(input_string) != 0 and input_string[-1][:4] == "cat ":
                 cat_option = input_string[-1]
-                input_string = "\n".join(input_string[:-1])
+                input_string = "".join(input_string[:-1])
             else:
-                input_string = "\n".join(input_string)
-            input_string = input_string.encode()
+                input_string = "".join(input_string)
             #print(input_string, cat_option)
-            
+
+            if program[-1] in args.cmd_exercise or program[-2] in args.cmd_exercise:
+                if not isinstance(input_string, list):
+                    cmd = [" ".join(['./' + program, str(input_string).replace("\n", "")])]
+                    input_string = ""
+                else:
+                    cmd = [" ".join(['./' + program, str(input_string[0]).replace("\n", "")])]
+                    input_string.pop(0)
+            else:
+                cmd = ['./' + program]
+            #print(subprocess.run(cmd).stdout)
+            result = execute(cmd, desc='Exercise: %d Trial: %d' % (self.ex_num, i+1), shell=True)
+
             if len(self.input_files) > 0:
+                input_string = input_string.encode()
                 output, error = result.communicate(input_string, timeout=TIMEOUT_SEC)
             else:
                 output, error = result.communicate(timeout=TIMEOUT_SEC)
+            #print(output, error)
 
             # 無限ループ対策
             if result.wait(TIMEOUT_SEC) is None:
@@ -181,13 +192,17 @@ class Compiler(object):
                 out[i+1].update({'point': 3})
             else:
                 if result.returncode != 0:
-                    if result.returncode == -11:
+                    # 故意に return 1 を返すこともあるため，output があればエラーとしない
+                    if len(output) != 0:
+                        error = b''
+                    elif result.returncode == -11:
                         error = b'segmentation fault\n'
                     else:
                         error = b'return code %d\n' % result.returncode
                 
                 cat_result = ""
                 if cat_option is not None:
+                    cat_result += "\n"
                     cat_result += subprocess.run(cat_option.split(), stdout = PIPE, stderr = PIPE).stdout.decode('utf-8', errors="ignore")
                 out[i+1].update({'std': output.decode('utf-8', errors="ignore")+cat_result, 'stderr': error.decode('utf-8')})
                 
@@ -232,14 +247,19 @@ class Compiler(object):
 def zip2dict(zip_filename, students):
     # 正確には zip ではないが，Friday 側との互換性のため変数名は zipfiles
     zipfiles = {}
-    for exercise in sorted(glob.glob(zip_filename+"/*")):
+    folder_list = sorted(glob.glob(zip_filename+"/*"))
+    folder_list = [folder for folder in folder_list if folder[-2] == "_"] + [folder for folder in folder_list if folder[-2] == "1"]
+    #print(folder_list)
+    for exercise in folder_list:
         if "ex"+str(args.exercise) not in os.path.basename(exercise) or \
-            os.path.basename(exercise)[-1] not in args.use_exercise:
+            (os.path.basename(exercise)[-1] not in args.use_exercise and \
+            os.path.basename(exercise)[-2:] not in args.use_exercise):
             continue
         print("採点対象； {0}".format(exercise))
 
         for name_file in sorted(glob.glob(exercise+"/*")):
             student_id = os.path.basename(name_file)
+            #print(student_id)
             assert student_id in students, "履修者名簿にない学籍番号です．チェックしてください．"
             program_file, submit_id = "", 0
             for p_file in sorted(glob.glob(exercise+"/"+student_id+"/*")):
@@ -306,11 +326,13 @@ def main(args=None):
             answers[i] = {}
     print("answers", answers)
 
+
     # 辞書初期化
     scoring = collections.OrderedDict()
 
     # 正確には zipfile ではなく，構造を展開して dict 化したもの
     zipfiles = zip2dict(args.zip, students)
+    #print(zipfiles)
  
     student_ids = sorted(zipfiles.keys())
     for student_id, zfiles in zipfiles.items():
@@ -331,8 +353,8 @@ def main(args=None):
             try:
                 name = os.path.basename(program_file)
                 ex_num, name_check = detect_exercise_num(name)
-                
-                if ex_num == -1 or ex_num >= len(compilers):
+                print(ex_num)
+                if ex_num == -1:# or ex_num >= len(compilers):
                     continue
                 
                 # cp to tmp directory                            
@@ -439,13 +461,18 @@ def main(args=None):
                         print('Cannot convert encoding')
 
                     # 対象ソースコードをコンパイル
-                    ret, msg = compiler.compile(program_info['file_path'], student_id +"_ex" + str(i))
+                    if str(i+1) not in args.fixed_exercise:
+                        compiled_name = student_id + "_ex" + str(i+1)
+                    else:
+                        compiled_name = "ex" + str(args.exercise) + "_" + str(i+1)
+
+                    ret, msg = compiler.compile(program_info['file_path'], compiled_name)
                     if not ret:
                         saiten['ex%d' % (i + 1)] = 2
                         program_info['status'] = 'NG (Compile Error)'
                     else:
                         # 対象プログラムを実行
-                        results = compiler.execute(student_id +"_ex" + str(i))
+                        results = compiler.execute(compiled_name)
                         saiten['ex%d' % (i + 1)] = 5
                         program_info['status'] = 'OK' if program_info['name_check'] else 'NG (Naming rule)'
                 except Exception as e:
@@ -479,10 +506,12 @@ def main(args=None):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('-c', '--csv', help='make csv', default=True)
+    parser.add_argument('--cmd_exercise', help='exercie num that need to use command line arguments (e.g. 1+2+3)', default="", type=str)
     parser.add_argument('-d', '--debug', help='debug mode', default=False, type=bool)    
     parser.add_argument('-e', '--exercise', help='the number of exersice', default=4, type=int)
     parser.add_argument('--exercise_path', help='the directory of exercise', default='./exercise/ex%d')
     parser.add_argument('--execution_dir', help='the directory of execution (test) environment', default='./execution_dir')
+    parser.add_argument('--fixed_exercise', help='the number of exercise which name is fixed', default="", type=str)
     parser.add_argument('--input_dir', help='input files in this dir that is needed to execute program properly',
                         default='./configs/inputs')
     parser.add_argument('-n', '--num_tasks', help='number of tasks', default=4, type=int)
@@ -498,8 +527,12 @@ if __name__ == "__main__":
     else:
         args.use_exercise = args.use_exercise.split("+")
     print(args.use_exercise)
+
+    args.cmd_exercise = set(args.cmd_exercise.split("+"))
+    args.fixed_exercise = set(args.fixed_exercise.split("+"))
     
     for filename in os.listdir(args.input_dir):
+        print(filename)
         subprocess.call(["rm", filename])
         subprocess.call(["cp", os.path.join(args.input_dir, filename), filename])
         subprocess.call(["chmod", "444", filename])
@@ -514,4 +547,4 @@ if __name__ == "__main__":
     
     
     if args.csv:
-        subprocess.call(["python3", "other_tools/make_csv.py"])
+        subprocess.call(["python3", "other_tools/make_csv.py", "-n", str(args.num_tasks)])

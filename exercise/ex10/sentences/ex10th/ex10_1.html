@@ -1,0 +1,68 @@
+<html>
+<head>
+  <title>実習課題10_1</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=shift_jis">
+</head>
+
+<body bgcolor="#000000" text="#FFFFFF" vlink="#00FF00" link="#99FFCC">
+
+
+<h2>実習課題10_1</h2>
+<hr>
+
+<p>
+<b>【プログラムの構造化】</b><br /><br />
+演習10-1で作成したプログラム p10_1.c をさらに構造化した以下のプログラム ex10_1.c <br>
+を完成させよ．<br>
+実装されていない各関数は，これまでの課題を参考に実装すること．<br>
+
+
+<pre>
+#include&lt;stdio.h&gt;
+#include&lt;ctype.h&gt;
+#include&lt;string.h&gt;
+#include&lt;stdlib.h&gt;
+
+#define BUFSIZE 256
+
+int factorial(int n);
+int getValue(void);
+void getInput(char msg[], char n[]);
+int isInt(char n[]);
+
+int main() {
+    int n;
+
+    n = getValue();
+    printf("%d の階乗は %d です\n", n, factorial(n));
+    return 0;
+}
+
+</pre>
+<br>
+
+<br /><div class="result">
+実行結果例（赤文字がキーボードからの入力）：<br /><hr style="height:1px"/>
+<pre>
+階乗を求めたい整数値を入力してください：<font color="#FF0000">2.2</font>
+2.2 は整数値ではありません
+階乗を求めたい整数値を入力してください：<font color="#FF0000">2.2.2</font>
+2.2.2 は整数値ではありません
+階乗を求めたい整数値を入力してください：<font color="#FF0000">a</font>
+a は整数値ではありません
+階乗を求めたい整数値を入力してください：<font color="#FF0000">2a</font>
+2a は整数値ではありません
+階乗を求めたい整数値を入力してください：<font color="#FF0000">.5</font>
+.5 は整数値ではありません
+階乗を求めたい整数値を入力してください：<font color="#FF0000">5</font>
+5 の階乗は 120 です
+
+</pre>
+<br />
+
+<p>　</p>
+<p>　</p>
+<p>　</p>
+
+</body>
+</html>

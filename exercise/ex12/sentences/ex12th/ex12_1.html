@@ -1,0 +1,88 @@
+<html>
+<head>
+  <title>実習課題12_1</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=shift_jis">
+</head>
+
+<body bgcolor="#000000" text="#FFFFFF" vlink="#00FF00" link="#99FFCC">
+
+
+<h2>実習課題12_1</h2>
+<hr>
+
+<p>
+<b>【対称行列の読み込み】</b><br /><br />
+以下のフォーマットをもつテキストファイルから数値を読み取り，対称行列として2次元配列に保存する<br>
+プログラム ex12_1.c を作成せよ．<br>
+ただし，2次元配列に対する領域は calloc()で確保するものとする．
+
+<ur>
+<li>ファイルの最初の行には対称行列の行数（＝列数）が記述されている．
+</li>
+<li>ファイルの2行目以降には，対称行列の上三角部分の要素について，値が0でない要素の情報が<br>
+1行につき1つずつ，行番号，列番号，値の順に記述されている．<br>
+ただし，各値は半角スペース1つで区切られており，対角成分はすべて 0 とする．
+</li>
+</ur>
+<br>
+
+動作確認は <a href="data12_1.txt">data12_1.txt</a> で行うこと．
+なお，ex12_1.c は以下の部分に関数read_matrix()の定義を加えるのみとし，以下に示している<br>
+部分に関しては，一切の変更・追記は認めない．<br>
+また，ファイルからの数値の読み取りには fscanf() を使用すればよい．
+
+<pre>
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+
+#define MAXLENGTH 512
+
+int **read_matrix(char *fname, int *s);
+
+int main(int argc, char* argv[]){
+
+	char buf[MAXLENGTH];
+	int **m, size, i, j;
+
+	m = read_matrix("data12_1.txt", &size);
+	// 対称行列の表示
+	printf("  ");
+	for(i = 0; i &lt; size; i++)
+		printf(" %2d", i + 1);
+	printf("\n");
+	for(i = 0; i &lt; size; i++){
+		printf("%2d", i+1);
+		for(j = 0; j &lt; size; j++)
+			printf(" %2d", m[i][j]);
+		printf("\n");
+	}
+
+	return 0;
+}
+
+</pre>
+<br>
+
+<br /><div class="result">
+実行結果例（赤文字がキーボードからの入力）：<br /><hr style="height:1px"/>
+<pre>
+$ <font color="#FF0000">./ex12_1.exe</font>
+    1  2  3  4  5  6  7  8  9
+ 1  0  1  4  2  0  0  0  0  0
+ 2  1  0  2  0  7  0  0  0  0
+ 3  4  2  0  3  1  5  0  0  0
+ 4  2  0  3  0  0  0  3  0  0
+ 5  0  7  1  0  0  3  0  5  0
+ 6  0  0  5  0  3  0  4  3  0
+ 7  0  0  0  3  0  4  0  0  6
+ 8  0  0  0  0  5  3  0  0  2
+ 9  0  0  0  0  0  0  6  2  0
+</pre>
+<br />
+
+<p>　</p>
+<p>　</p>
+<p>　</p>
+
+</body>
+</html>

@@ -11,6 +11,7 @@ def split_document(doc):
     return doc.split("\n")
 
 def split_string(string, delimiter=" ",method="doc"):
+    # スペース，タブ は表現の幅が広すぎるので，対象外
     string = string.lower().replace(" ", "").replace("\t", "")
     #string = string.replace("-", "").replace(".", " .").replace(",", " ,")\
     #        .replace("(", " ( ").replace(")", " ) ").replace("[", " [ ").replace("]", " ] ")
@@ -20,6 +21,7 @@ def split_string(string, delimiter=" ",method="doc"):
     for sentence in doc:
         sentence = split_sentence(sentence, delimiter)
         sentence = [word for word in sentence if word not in stop_words]
+        #print(sentence)
         if method == "doc": # split document (all sentence)
             morphs.extend(sentence)
         else: # split every sentence

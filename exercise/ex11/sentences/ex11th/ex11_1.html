@@ -1,0 +1,55 @@
+<html>
+<head>
+  <title>実習課題11_1</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=shift_jis">
+</head>
+
+<body bgcolor="#000000" text="#FFFFFF" vlink="#00FF00" link="#99FFCC">
+
+
+<h2>実習課題11_1</h2>
+<hr>
+
+<p>
+<b>【ポインタ変数を利用した文字列の表示】</b><br /><br />
+文字列を保存した char型の配列をアドレス渡しで受け取り，その内容を1文字ずつ for文を<br>
+使って表示する関数 print_string() を実装し，以下のプログラム ex11_1.c を完成させよ．<br>
+ただし，関数 print_string() 内では，if 文を利用してはならず，また，配列も利用しては<br>
+ならない．文字列の表示には char型のポインタ変数を利用すること．<br>
+なお，ex11_1.c は以下の部分に各関数の定義を加えるのみとし，以下に示している<br>
+部分に関しては，一切の変更・追記は認めない．<br>
+
+
+<pre>
+#include&lt;stdio.h&gt;
+#include&lt;stdlib.h&gt;
+
+#define BUFSIZE 64
+
+void print_string(char *s);
+
+int main() {
+    char string[BUFSIZE] = "Aoyama Taro";
+	
+	print_string(string);
+	
+    return 0;
+}
+</pre>
+<br>
+
+<br /><div class="result">
+実行結果例（赤文字がキーボードからの入力）：<br /><hr style="height:1px"/>
+<pre>
+$ <font color="#FF0000">./ex11_1.exe</font>
+Aoyama Taro
+
+</pre>
+<br />
+
+<p>　</p>
+<p>　</p>
+<p>　</p>
+
+</body>
+</html>

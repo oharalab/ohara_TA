@@ -1,4 +1,3 @@
-./ex8_18.exe
 test.pnm
 Aoyama
 1003

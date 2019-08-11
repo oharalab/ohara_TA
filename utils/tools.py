@@ -14,7 +14,7 @@ def detect_exercise_num(file_path, offset=-1):
     #if not filename:
     #    return -1, None
 
-    match_obj = re.search('(ex)?[0-9]{1,2}.([0-9])\.(\w+)$', file_path)
+    match_obj = re.search('(ex)?[0-9]{1,2}.([0-9]{1,2})\.(\w+)$', file_path)
     if isinstance(match_obj, type(None)):
         match_obj = re.search('([0-9])\.(\w+)$', file_path)
         basename = match_obj.group(1)

@@ -1,0 +1,94 @@
+<html>
+<head>
+  <title>実習課題9_13b</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=shift_jis">
+</head>
+
+<body bgcolor="#000000" text="#FFFFFF" vlink="#00FF00" link="#99FFCC">
+
+
+<h2>実習課題9_13b</h2>
+<hr>
+
+<p>
+<b>【指定した年月日の曜日の表示】</b><br /><br />
+実習課題9_12 で作成した ex9_12.c に，指定した年の1月1日の曜日と，その年における指定した日付までの<br>
+日数を手掛かりに，その年月日の曜日を求める関数 getDayOfWeek() を実装し，以下のプログラム ex9_13.c <br>
+を完成させよ．関数 getDayOfWeek() の第1引数は指定した年の1月1日の曜日に対応するインデックス，第2引数は<br>
+その年における指定した日付までの日数である．<br>
+なお，ex9_13.c は以下の部分に各関数の定義を加えるのみとし，以下に示している部分に<br>
+関しては，一切の変更・追記は認めない．<br>
+<font color="#FF0000">以下の部分が変更・追記されたプログラムは正しく動作しても 0 点とする．</font><br>
+
+
+<pre>
+#include&lt;stdio.h&gt;
+#include&lt;ctype.h&gt;
+#include&lt;string.h&gt;
+#include&lt;stdlib.h&gt;
+
+#define BUFSIZE 128
+
+int days[] = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
+char day_of_week[7][10]={
+	"sunday","monday","tuesday", "wednesday", "thursday","friday", "saturday"};
+
+void getInput(char msg[], char n[]);
+int isInt(char n[]);
+int getYear(void);
+int getMonth(void);
+int getDay(int y, int m);
+int getDays(int y, int m);
+int isLeapYear(int y);
+int getDayOfWeekForFirstDay(int y);
+int countDays(int y, int m, int d);
+int getDayOfWeek(int dow, int days);
+
+int main(){
+	int year, month, day, dow, dow_first, days_in_year;
+	
+	year = getYear();
+	printf("西暦：%d\n", year);
+	month = getMonth();
+	printf("月：%d\n", month);
+	day = getDay(year, month);
+	printf("日：%d\n", day);
+	dow_first = getDayOfWeekForFirstDay(year);
+	printf("%d年の1月1日の曜日は %s\n", year, day_of_week[dow_first]);
+	days_in_year = countDays(year, month, day);
+	printf("%d年%d月%d日はその年の%d日目\n", year, month, day, days_in_year);
+	dow = getDayOfWeek(dow_first, days_in_year);
+	printf("曜日は %s です\n", day_of_week[dow]);
+
+	return 0;
+}
+
+</pre>
+<br>
+
+
+<br /><div class="result">
+実行例（赤文字がキーボードからの入力）：<br /><hr style="height:1px"/>
+<pre>
+$ <font color="#FF0000">./ex9_13.exe</font>
+西暦を入力してください（2000年以降）：<font color="#FF0000">2019</font>
+西暦：2019
+月を入力してください：<font color="#FF0000">6</font>
+月：6
+日を入力してください：<font color="#FF0000">6</font>
+日：6
+2019年の1月1日の曜日は tuesday
+2019年6月6日はその年の157日目
+曜日は thursday です
+
+</pre>
+<br />
+
+</p>
+
+<p>　</p>
+<p>　</p>
+<p>　</p>
+
+</body>
+</html>

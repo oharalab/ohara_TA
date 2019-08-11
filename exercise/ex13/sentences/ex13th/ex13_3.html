@@ -1,0 +1,116 @@
+<html>
+<head>
+  <title>実習課題13_3</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=shift_jis">
+</head>
+
+<body bgcolor="#000000" text="#FFFFFF" vlink="#00FF00" link="#99FFCC">
+
+
+<h2>実習課題13_3</h2>
+<hr>
+
+<p>
+<b>【単方向リスト末尾の要素の削除】</b><br /><br />
+演習13-8 で実装したプログラム p13_8.c に，単方向リストの最後の要素を削除する関数<br>
+remove_node() を追加し，以下のプログラム ex13_3.c を完成させよ．<br>
+なお，関数 remove_node() は，末尾の要素を削除する際に，その要素のもつデータ値を<br>
+最後の引数で指定した領域に返す．<br>
+なお，ex13_3.c は以下の部分に各関数の定義を加えるのみとし，以下に示している部分に<br>
+関しては，一切の変更・追記は認めない．<br>
+<font color="#FF0000">以下の部分が変更・追記されたプログラムは正しく動作しても 0 点とする．</font><br>
+</p>
+
+<pre>
+#include&lt;stdio.h&gt;
+#include&lt;stdlib.h&gt;
+
+typedef struct {
+    int num1;
+    int num2;
+} my_data;
+
+typedef struct node{
+    my_data data;
+    struct node *next;
+} list_node;
+
+list_node *new_node(my_data d);
+list_node *push_node(list_node *root, my_data d);
+list_node *pop_node(list_node *root, my_data *d);
+list_node *append_node(list_node **root, list_node *tail, my_data d);
+list_node *remove_node(list_node **root, list_node *tail, my_data *d);
+void print_data(my_data d);
+void print_list(list_node *root);
+
+int main(int argc, char **argv) {
+    list_node *root, *tail;
+    my_data d[5] = {{1, 10}, {2, 20}, {3, 30}, {4, 40}, {5, 50}};
+    my_data popped_data, removed_data;
+    int i;
+	
+    root = tail = NULL;
+    for(i = 0; i < 5; i++)
+        //root = push_node(root, d[i]);
+        tail = append_node(&root, tail, d[i]);
+    print_list(root);
+    /*
+    while(root != NULL){
+        root = pop_node(root, &popped_data);
+        printf("List after popping ");
+        print_data(popped_data);
+        print_list(root);
+    }
+    */
+    while(root != NULL){
+        tail = remove_node(&root, tail, &removed_data); 
+        printf("List after removing ");
+        print_data(removed_data);
+        print_list(root);
+    }
+    return 0;
+}
+</pre>
+
+<p>
+なお，この課題では，プログラムの実装を始める前に，関数 remove_node()で実現する処理手順を<br>
+Word ファイル ex13_3.docx に箇条書きでまとめること（要提出）．<br>
+ファイルの先頭には学生番号と氏名を必ず明記すること．<br>
+</p>
+
+<br /><div class="result">
+実行例（赤文字がキーボードからの入力）：<br /><hr style="height:1px"/>
+<pre>
+$ <font color="#FF0000">./ex13_3.exe</font>
+(1, 10)
+(2, 20)
+(3, 30)
+(4, 40)
+(5, 50)
+List after removing (5, 50)
+(1, 10)
+(2, 20)
+(3, 30)
+(4, 40)
+List after removing (4, 40)
+(1, 10)
+(2, 20)
+(3, 30)
+List after removing (3, 30)
+(1, 10)
+(2, 20)
+List after removing (2, 20)
+(1, 10)
+List after removing (1, 10)
+
+</pre>
+<br />
+
+</p>
+
+<p>　</p>
+<p>　</p>
+<p>　</p>
+
+</body>
+</html>

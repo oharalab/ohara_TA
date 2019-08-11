@@ -1,0 +1,82 @@
+<html>
+<head>
+  <title>実習課題9_4</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=shift_jis">
+</head>
+
+<body bgcolor="#000000" text="#FFFFFF" vlink="#00FF00" link="#99FFCC">
+
+
+<h2>実習課題9_4</h2>
+<hr>
+
+<p>
+<b>【九九の表の出力（ファイルへの出力を含む）】</b><br /><br />
+実習課題9_3b で作成した ex9_3.c に，九九の表をファイルに出力する関数 print_kukuf() をさらに<br>
+実装したプログラム ex9_4.c を作成せよ．出力ファイル名は "result_n.txt" とし，n の部分は<br>
+キーボードから入力された数値となるものとする．<br>
+また，ex9_3.c では main() 関数内に記述されていたキーボードからの入力を受け取る部分は<br>
+関数 getValue() として実装せよ．<br>
+なお，ex9_4.c は以下の部分に各関数の定義を加えるのみとし，以下に示している部分に関しては，<br>
+一切の変更・追記は認めない．<br>
+<font color="#FF0000">以下の部分が変更・追記されたプログラムは正しく動作しても 0 点とする．</font><br>
+
+<pre>
+#include&lt;stdio.h&gt;
+#include&lt;ctype.h&gt;   // 数字の判定に利用
+#include&lt;string.h&gt;  // 文字列処理に利用
+#include&lt;stdlib.h&gt;  // atoi() とエラー処理に利用
+
+#define BUFSIZE 128
+
+void getInput(char msg[], char n[]);
+int isInt(char n[]);
+void print_kuku(int n);
+void print_kukuf(int n, char buf[]);
+int getValue(char buf[]);
+
+int main(){
+    char buf[BUFSIZE];
+    int n;
+	
+    n = getValue(buf);
+    print_kuku(n);
+    print_kukuf(n, buf);
+	
+    return 0;
+}
+</pre>
+
+
+<br /><div class="result">
+<p>
+実行例1（赤文字がキーボードからの入力）：<br /><hr style="height:1px"/>
+<pre>
+$ <font color="#FF0000">./ex9_4.exe</font>
+1から9までの整数値を入力してください：<font color="#FF0000">0</font>
+1から9までの整数値を入力してください：<font color="#FF0000">10</font>
+1から9までの整数値を入力してください：<font color="#FF0000">a</font>
+a は整数値ではありません
+1から9までの整数値を入力してください：<font color="#FF0000">3</font>
+     1  2  3
+  1  1  2  3
+  2  2  4  6
+  3  3  6  9
+
+$ <font color="#FF0000">cat result_3.txt</font>
+     1  2  3
+  1  1  2  3
+  2  2  4  6
+  3  3  6  9
+</pre>
+</p>
+<br />
+
+
+
+<p>　</p>
+<p>　</p>
+<p>　</p>
+
+</body>
+</html>

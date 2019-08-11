@@ -1,4 +1,3 @@
-./ex8_9.exe
 Aoyama Taro
 10
 -20

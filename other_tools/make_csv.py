@@ -8,6 +8,7 @@ parser.add_argument('-s', '--score_rate', default=0.3,
                     help='the score is needed to get 4 score by rate * max_score')
 parser.add_argument('-l', '--code_length_rate', default=0.5,
                     help='the score is needed to get 2 score by rate * code_length that the almost correct code has')
+parser.add_argument('-n', '--num_tasks', type=int, help='the number of tasks')
 parser.add_argument('-c', '--candidates', default='configs/candidates.txt')
 
 args = parser.parse_args()
@@ -42,14 +43,14 @@ for target in target_htmls:
                 scores.append(line)
             if len(code_length) > len(scores) + 1:
                 scores.append(0)
-        code_length = [code_length[i] if i < len(code_length) else 0 for i in range(4)]
-        scores = [scores[i] if i < len(scores) else 0 for i in range(4)]
+        code_length = [code_length[i] if i < len(code_length) else 0 for i in range(args.num_tasks)]
+        scores = [scores[i] if i < len(scores) else 0 for i in range(args.num_tasks)]
         score_dict[student_id] = [code_length, scores]
 
 #print(score_dict)
 
-code_info = [0.000001] * 8 # task1 ~ task4 (average code len, num)
-score_info = [0.000001] * 8
+code_info = [0.000001] * args.num_tasks * 2 # task1 ~ task4 (average code len, num)
+score_info = [0.000001] * args.num_tasks * 2
 
 for value in score_dict.values():
     code_len = value[0]
@@ -63,10 +64,11 @@ for value in score_dict.values():
 
 task_code = []
 task_score = []
-for i in range(4):
+for i in range(args.num_tasks):
     task_code.append(code_info[i*2]/code_info[i*2+1])
     task_score.append(score_info[i*2]/score_info[i*2+1])
 task_score = [score if score >= 0.1 else 0.1 for score in task_score]
+#task_score[1] = 0.001
 print(task_code)
 print(task_score)
 
@@ -83,7 +85,7 @@ with open(os.path.join(output_dir, "easy_score.csv"), "w") as f:
 	for cand_id in cand_ids:
 		key = cand_id
 		info = []
-		easy_scores = ["0"] * 4
+		easy_scores = ["0"] * args.num_tasks
 		if cand_id in score_dict:
 			value = score_dict[key]
 			code_len = value[0]
