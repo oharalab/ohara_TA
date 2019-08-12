@@ -1,0 +1,73 @@
+<html>
+<head>
+  <title>実習課題8_11</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=shift_jis">
+</head>
+
+<body bgcolor="#000000" text="#FFFFFF" vlink="#00FF00" link="#99FFCC">
+
+
+<h2>実習課題8_11</h2>
+<hr>
+
+<p>
+<b>【西暦・月の入力】</b><br /><br />
+実習課題8_10 作成した ex8_10.c に，月の正しい入力を求める関数 getMonth() <br>
+を実装し，以下のプログラム ex8_11.c を完成させよ．<br>
+なお，ex8_11.c は以下の部分に各関数の定義を加えるのみとし，以下に示している部分に<br>
+関しては，一切の変更・追記は認めない．<br>
+<font color="#FF0000">以下の部分が変更・追記されたプログラムは正しく動作しても 0 点とする．</font><br>
+
+
+<pre>
+#include&lt;stdio.h&gt;
+#include&lt;ctype.h&gt;
+#include&lt;string.h&gt;
+#include&lt;stdlib.h&gt;
+
+#define BUFSIZE 128
+
+void getInput(char msg[], char n[]);
+int isInt(char n[]);
+int getYear(void);
+int getMonth(void);
+
+int main(){
+	int year, month;
+	
+	year = getYear();
+	printf("西暦：%d\n", year);
+	month = getMonth();
+	printf("月：%d\n", month);
+
+	return 0;
+}
+</pre>
+<br>
+
+
+<br /><div class="result">
+実行例（赤文字がキーボードからの入力）：<br /><hr style="height:1px"/>
+<pre>
+$ <font color="#FF0000">./ex8_11.exe</font>
+西暦を入力してください（2000年以降）：<font color="#FF0000">2019</font>
+西暦：2019
+月を入力してください：<font color="#FF0000">13</font>
+月は1～12までの整数で入力してください：<font color="#FF0000">0</font>
+月は1～12までの整数で入力してください：<font color="#FF0000">-20</font>
+月は1～12までの整数で入力してください：<font color="#FF0000">6.7</font>
+6.7 は整数値ではありません
+月は1～12までの整数で入力してください：<font color="#FF0000">6</font>
+月：6
+
+</pre>
+<br />
+
+</p>
+
+<p>　</p>
+<p>　</p>
+<p>　</p>
+
+</body>
+</html>

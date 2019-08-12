@@ -1,0 +1,136 @@
+<html>
+<head>
+  <title>実習課題8_7</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=shift_jis">
+</head>
+
+<body bgcolor="#000000" text="#FFFFFF" vlink="#00FF00" link="#99FFCC">
+
+
+<h2>実習課題8_7</h2>
+<hr>
+
+<p>
+<b>【非負実数の入力チェック】</b><br /><br />
+実習課題8_3 を参考に，非負の実数値（0 以上の実数値）の入力が期待されるときに，<br>
+入力が非負実数であることを正しく判定する関数 isReal() を実装し，以下のプログラムを ex8_7.c として<br>
+完成させよ．関数 isReal() は，引数として与えられた文字列が非負実数の場合は 1 を返し，それ以外の場合は<br>
+0 を返すものとする．また，関数 getInput() は，ex8_3.c 他と同様のものとする．<br>
+なお，ex8_7.c は以下の部分に関数 isReal() と getInput() の定義を加えるのみとし，以下に示している部分に<br>
+関しては，一切の変更・追記は認めない．<br>
+<font color="#FF0000">以下の部分が変更・追記されたプログラムは正しく動作しても 0 点とする．</font><br>
+
+<pre>
+#include&lt;stdio.h&gt;
+#include&lt;ctype.h&gt;   // 数字の判定に利用
+#include&lt;string.h&gt;  // 文字列長の取得に利用
+
+#define BUFSIZE 128
+
+void getInput(char msg[], char n[]);
+int isReal(char n[]);
+
+int main(){
+    char buf[BUFSIZE];
+	
+    getInput("実数値を入力してください：", buf);
+    if(isReal(buf))
+        printf("%s は非負の実数値です\n", buf);
+    else
+        printf("%s は非負の実数値ではありません\n", buf);
+	
+    return 0;
+}
+</pre>
+<br>
+
+
+<br /><div class="result">
+<p>
+実行例1（赤文字がキーボードからの入力）：<br /><hr style="height:1px"/>
+<pre>
+$ <font color="#FF0000">./ex8_7.exe</font>
+実数値を入力してください：<font color="#FF0000">12.3</font>
+12.3 は非負の実数値です
+</pre>
+</p>
+<br />
+
+<p>
+実行例2（赤文字がキーボードからの入力）：<br /><hr style="height:1px"/>
+<pre>
+$ <font color="#FF0000">./ex8_7.exe</font>
+実数値を入力してください：<font color="#FF0000">0.3</font>
+0.3 は非負の実数値です
+</pre>
+</p>
+<br />
+
+<p>
+実行例3（赤文字がキーボードからの入力）：<br /><hr style="height:1px"/>
+<pre>
+$ <font color="#FF0000">./ex8_7.exe</font>
+実数値を入力してください：<font color="#FF0000">.3</font>
+.3 は非負の実数値ではありません
+</pre>
+</p>
+<br />
+
+<p>
+実行例4（赤文字がキーボードからの入力）：<br /><hr style="height:1px"/>
+<pre>
+$ <font color="#FF0000">./ex8_7.exe</font>
+実数値を入力してください：<font color="#FF0000">12</font>
+12 は非負の実数値です
+</pre>
+</p>
+<br />
+
+<p>
+実行例5（赤文字がキーボードからの入力）：<br /><hr style="height:1px"/>
+<pre>
+$ <font color="#FF0000">./ex8_7.exe</font>
+実数値を入力してください：<font color="#FF0000">-12</font>
+-12 は非負の実数値ではありません
+</pre>
+</p>
+<br />
+
+<p>
+実行例6（赤文字がキーボードからの入力）：<br /><hr style="height:1px"/>
+<pre>
+$ <font color="#FF0000">./ex8_7.exe</font>
+実数値を入力してください：<font color="#FF0000">12.x</font>
+12.x は非負の実数値ではありません
+</pre>
+</p>
+<br />
+
+<p>
+実行例7（赤文字がキーボードからの入力）：<br /><hr style="height:1px"/>
+<pre>
+$ <font color="#FF0000">./ex8_7.exe</font>
+実数値を入力してください：<font color="#FF0000">12.3.4</font>
+12.3.4 は非負の実数値ではありません
+</pre>
+</p>
+<br />
+
+<p>
+実行例8（赤文字がキーボードからの入力）：<br /><hr style="height:1px"/>
+<pre>
+$ <font color="#FF0000">./ex8_7.exe</font>
+実数値を入力してください：<font color="#FF0000">a</font>
+a は非負の実数値ではありません
+</pre>
+</p>
+<br />
+
+</p>
+
+<p>　</p>
+<p>　</p>
+<p>　</p>
+
+</body>
+</html>

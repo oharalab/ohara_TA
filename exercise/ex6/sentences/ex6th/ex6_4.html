@@ -1,0 +1,47 @@
+<html>
+<head>
+  <title>実習課題6_4</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=shift_jis">
+</head>
+
+<body bgcolor="#000000" text="#FFFFFF" vlink="#00FF00" link="#99FFCC">
+
+
+<h2>実習課題6_4</h2>
+<hr>
+
+<p>
+<b>【画像ファイルへの文字列の埋め込み】</b><br /><br />
+画像ファイルのフォーマットの中に PPM という形式のファイルがある．<br>
+PPM には2種類のバリエーションがあり，マジックナンバーの指定が P3 のものは，<br>
+カラー画像をテキストファイルで表現することができる．<br>
+ここでは，指定した PPM形式のファイル（拡張子は .pnm）の100番台の画素に，<br>
+指定した文字列を埋め込んだ画像を生成するプログラムを作成せよ．<br>
+なお，1つ目の画素には埋め込んだ文字列の長さを記録すること．<br>
+画素への文字の埋め込みは，RGBいずれかの画素値を文字列を構成する文字の<br>
+文字コードで置き換えることで実現せよ．<br>
+<br>
+なお，ファイルフォーマットに関しては，各自で調べること．<br>
+
+<p>
+動作確認には，CoursePower 上の test.pnm を利用すること．<br>
+画像を表示する場合は，PC教室の Windows で利用可能な IrfanView を利用できる．<br>
+なお，CoursePower 上には文字列 Aoyama Gakuin を埋め込んだ画像ファイル（test_embedded.pnm）も置いている．<br>
+画像の見た目がどうなのか，表示して確認してみよ．<br>
+</p>
+
+<p>
+<br /><div class="result">
+実行結果例（赤文字がキーボードからの入力）：<br /><hr style="height:1px"/>
+<pre>
+ファイル名を入力してください：<font color="#FF0000">test.pnm</font>
+文字列を指定してください：<font color="#FF0000">Aoyama Gakuin</font>
+ファイル test_embedded.pnm を作成しました．
+</p>
+
+<p>　</p>
+<p>　</p>
+<p>　</p>
+
+</body>
+</html>

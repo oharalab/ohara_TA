@@ -1,0 +1,95 @@
+<html>
+<head>
+  <title>実習課題11_2</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=shift_jis">
+</head>
+
+<body bgcolor="#000000" text="#FFFFFF" vlink="#00FF00" link="#99FFCC">
+
+
+<h2>実習課題11_2</h2>
+<hr>
+
+<p>
+<b>【ポインタ変数を引数に取る関数】</b><br /><br />
+演習11-3で実装したプログラム p11_3.c 内では，変数 a と b に対して，ポインタ変数を通して<br>
+同じ変更を加えている．その部分を関数 update_value() として切り出して実装し，以下のプログラム<br>
+ex11_2.c を完成させよ．<br>
+なお，ex11_2.c は以下の部分に各関数の定義を加えるのみとし，以下に示している<br>
+部分に関しては，一切の変更・追記は認めない．<br>
+
+<pre>
+#include&lt;stdio.h&gt;
+
+void update_value(int *ptr);
+
+int main() {
+    int a = 10, b = 20, *p;
+	double  *q;
+
+    printf("aの値：%d\n", a);
+    printf("aのアドレス：%p\n", &a);
+    printf("bの値：%d\n", b);
+    printf("bのアドレス：%p\n", &b);
+    printf("pの値：%p\n", p);
+    printf("pのアドレス：%p\n", &p);
+    printf("pのデータサイズ：%d bytes = %2d bits\n", (int)sizeof(p), (int)sizeof(p) * 8);
+    printf("qのデータサイズ：%d bytes = %2d bits\n", (int)sizeof(q), (int)sizeof(q) * 8);
+    printf("\n");
+	
+	update_value(&a);
+    printf("aの値：%d\n", a);
+    printf("aのアドレス：%p\n", &a);
+    printf("\n");
+
+	update_value(&b);
+    printf("bの値：%d\n", b);
+    printf("bのアドレス：%p\n", &b);
+    printf("\n");
+
+    return 0;
+}
+
+</pre>
+
+
+<br /><div class="result">
+<p>
+実行例（具体的なアドレス値はそれぞれの環境で異なる）：<br /><hr style="height:1px"/>
+<pre>
+aの値：10
+aのアドレス：0xffffcc0c
+bの値：20
+bのアドレス：0xffffcc08
+pの値：0x0
+pのアドレス：0xffffcc00
+pのデータサイズ：8 bytes = 64 bits
+qのデータサイズ：8 bytes = 64 bits
+
+pの値：0xffffcc0c
+pが指すアドレスの内容：10
+
+pの値：0xffffcc0c
+pが指すアドレスの内容：110
+aの値：110
+aのアドレス：0xffffcc0c
+
+pの値：0xffffcc08
+pが指すアドレスの内容：20
+
+pの値：0xffffcc08
+pが指すアドレスの内容：120
+bの値：120
+bのアドレス：0xffffcc08
+
+</pre>
+</p>
+<br />
+</div>
+
+<p>　</p>
+<p>　</p>
+<p>　</p>
+
+</body>
+</html>

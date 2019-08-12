@@ -1,0 +1,55 @@
+<html>
+<head>
+  <title>実習課題15_2</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=shift_jis">
+</head>
+
+<body bgcolor="#000000" text="#FFFFFF" vlink="#00FF00" link="#99FFCC">
+
+
+<h2>実習課題15_2</h2>
+<hr>
+
+<p>
+<b>【最小値・最大値】</b><br /><br />
+引数で与えられた整数型配列の値の中から最小値を見つける関数 min()，および，最大値を<br>
+見つける関数 max() を実装し，以下のプログラム ex15_2.c を完成させよ．<br>
+なお，ex15_2.c の以下の変更は認めない．<br>
+</p>
+<br>
+
+<pre>
+#include&lt;stdio.h&gt;
+
+int min(int *d, int num);
+int max(int *d, int num);
+
+int main(){
+    int data[] = {4, 5, 1, 2, 7, 10, 8};
+	
+    printf("最小値：%d\n", min(data, (int)sizeof(data)/sizeof(int)));
+    printf("最大値：%d\n", max(data, (int)sizeof(data)/sizeof(int)));
+	
+    return 0;
+}
+</pre>
+
+<br>
+
+<br /><div class="result">
+実行結果例（赤文字がキーボードからの入力）：<br /><hr style="height:1px"/>
+<pre>
+$ <font color="#FF0000">./ex15_2.exe</font>
+最小値：1
+最大値：10
+
+</pre>
+<br />
+
+
+<p>　</p>
+<p>　</p>
+<p>　</p>
+
+</body>
+</html>

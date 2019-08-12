@@ -1,0 +1,63 @@
+<html>
+<head>
+    <title>実習課題4_1</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=shift_jis">
+</head>
+
+
+<body bgcolor="#000000" text="#FFFFFF" vlink="#00FF00" link="#99FFCC">
+
+
+<h2>実習課題4_1</h2>
+<hr>
+
+<p>
+<b>【ベクトルの内積】</b><br /><br />
+n 次元ベクトル同士の内積は，各要素ごとの積の総和を取ることで求められる．<br>
+具体的には，v = (v1, v2, ..., vn) と w = (w1, w2, ..., wn) という2つの n 次元ベクトルが与えられたとき，<br>
+v と w の内積は v1 * w1 + v2 *  w2 + ... + vn * wn となる．<br>
+この定義に従い 2つの n 次元の整数ベクトルの内積を求める関数 dot() と n 次元ベクトルを表示する関数 print_vec()<br>
+を実装することで，以下のプログラム ex4_1.c を完成させよ．
+
+
+<pre>
+/*
+ * ex4_1
+ */
+#include <stdio.h>
+
+#define dim 5
+
+void print_vec(int v[]);
+int dot(int v[], int w[]);
+
+int main(){
+    int v[] = {1, 2, 3, 4, 5};
+    int w[] = {6, 7, 8, 9, 10};
+	
+    print_vec(v);
+    print_vec(w);
+    printf("内積：%d\n",  dot(v, w));
+	
+    return 0;
+}
+</pre>
+
+<br />
+実行結果例：<br /><hr style="height:1px"/>
+<pre>
+(1, 2, 3, 4, 5)
+(6, 7, 8, 9, 10)
+内積：130
+</pre>
+
+
+
+</p>
+
+<p>　</p>
+<p>　</p>
+<p>　</p>
+
+</body>
+</html>

@@ -1,0 +1,3 @@
+test.pnm
+Aoyama Gakuin
+1001

@@ -1,0 +1,108 @@
+<html>
+<head>
+  <title>実習課題8_18</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=shift_jis">
+</head>
+
+<body bgcolor="#000000" text="#FFFFFF" vlink="#00FF00" link="#99FFCC">
+
+
+<h2>実習課題8_18</h2>
+<hr>
+
+<p>
+<b>【画像ファイルへの文字列の埋め込み】</b><br /><br />
+実習課題 6_3 で作成した ex6_3.c を以下の仕様を満たすように変更したプログラム<br>
+ex8_18.c を作成せよ．
+</p>
+
+<ur>
+<li>プログラムは文字列を埋め込む PPM形式のファイル名，その画像に埋め込む文字列，<br>
+および埋め込み用のマジックナンバーを順番に受け取る．
+</li>
+<li>埋め込み用のマジックナンバーは正の整数値であり，最後の桁は文字列を埋め込む<br>
+色の指定（0：赤，1：緑，2：青）であり，残りの桁は何画素おきに文字を埋め込むのかの<br>
+間隔を指定するものとする．たとえば，2001 とした場合，200の倍数番目の画素の緑画素値に<br>
+順番に文字を埋め込むことを指定する．
+</li>
+<li>色の指定が0～2以外であった場合は，適切なメッセージを出力してプログラムは終了する．
+</li>
+<li>文字を埋め込む間隔が長すぎて指定した文字列が埋め込めない場合は，その文字列を埋め込む<br>
+ための間隔の上限値を出力してプログラムは終了する．
+</li>
+<li>文字を埋め込む間隔が10画素より短い場合は，最低でも10画素必要とのメッセージを出力して<br>
+プログラムは終了する．
+</li>
+</ul>
+
+<p>
+上記以外の使用は，ex6_3.c と同じとする．
+</p>
+
+<p>
+動作確認には，実習課題6_3 に対する test.pnm を利用すること．<br>
+画像を表示する場合は，PC教室の Windows で利用可能な IrfanView を利用できる．<br>
+なお，実習課題6_3にて文字列 Aoyama Gakuin を埋め込んだ画像ファイル（test_embedded.pnm）<br>
+に関しては，100画素ごとの緑の画素値に文字を埋め込んでいる．<br>
+</p>
+
+<p>
+<br /><div class="result">
+実行例1（赤文字がキーボードからの入力）：<br /><hr style="height:1px"/>
+<pre>
+$ <font color="#FF0000">./ex8_18.exe</font>
+ファイル名を入力してください：<font color="#FF0000">test.pnm</font>
+test.pnm
+埋め込む文字列を指定してください：<font color="#FF0000">Aoyama Gakuin</font>
+Aoyama Gakuin
+マジックナンバーを入力してください：<font color="#FF0000">1001</font>
+ファイル test_embedded.pnm を作成しました
+</pre>
+<br>
+</p>
+
+実行例2（赤文字がキーボードからの入力）：<br /><hr style="height:1px"/>
+<pre>
+$ <font color="#FF0000">./ex8_18.exe</font>
+ファイル名を入力してください：<font color="#FF0000">test.pnm</font>
+test.pnm
+埋め込む文字列を指定してください：<font color="#FF0000">Aoyama</font>
+Aoyama
+マジックナンバーを入力してください：<font color="#FF0000">1003</font>
+Wrong color ID!
+</pre>
+<br>
+</p>
+
+実行例3（赤文字がキーボードからの入力）：<br /><hr style="height:1px"/>
+<pre>
+$ <font color="#FF0000">./ex8_18.exe</font>
+ファイル名を入力してください：<font color="#FF0000">test.pnm</font>
+test.pnm
+埋め込む文字列を指定してください：<font color="#FF0000">Aoyama</font>
+Aoyama
+マジックナンバーを入力してください：<font color="#FF0000">70</font>
+The minimum interval is 10
+</pre>
+<br>
+</p>
+
+実行例4（赤文字がキーボードからの入力）：<br /><hr style="height:1px"/>
+<pre>
+$ <font color="#FF0000">./ex8_18.exe</font>
+ファイル名を入力してください：<font color="#FF0000">test.pnm</font>
+test.pnm
+埋め込む文字列を指定してください：<font color="#FF0000">Aoyama</font>
+Aoyama
+マジックナンバーを入力してください：<font color="#FF0000">1000000002</font>
+The maximum interval is 115370
+</pre>
+<br>
+</p>
+
+<p>　</p>
+<p>　</p>
+<p>　</p>
+
+</body>
+</html>

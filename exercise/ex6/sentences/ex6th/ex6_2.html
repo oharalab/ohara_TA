@@ -1,0 +1,57 @@
+<html>
+<head>
+  <title>実習課題6_2</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=shift_jis">
+</head>
+
+<body bgcolor="#000000" text="#FFFFFF" vlink="#00FF00" link="#99FFCC">
+
+
+<h2>実習課題6_2</h2>
+<hr>
+
+<p>
+<b>【ヒストグラムの出力（ファイルからの入力）】</b><br /><br />
+実習課題 6_1で作成した ex6_1.c を，入力データを指定したファイルから読み込むように<br>
+変更したプログラム ex6_2.c を作成せよ．<br>
+なお，データの読み込みは関数 input_data() を利用するものとし，データの個数は100個とする．<br>
+CoursePower 上にある data_ex6_2.txt を用いて動作確認せよ．<br>
+また，以下の仕様に従うこと．<br>
+<br>
+
+<pre>
+#include &lang;stdio.h&rang;
+#include &lang;stdlib.h&rang;
+
+#define bin_size 10
+#define max_size 20
+#define d_size 100
+
+int input_data(char fname[], int d[]);
+void make_hist(int d[], int h[][max_size]);
+int print_vhist(int h[][max_size]);
+
+int main(){
+	int data[d_size] = {};
+	int hist[bin_size][max_size] = {};
+	char fname[100];
+	
+	printf("ファイル名を入力してください：");
+	scanf("%s", fname);
+	if(input_data(fname, data) == 1)
+		return 1;
+	make_hist(data, hist);
+	if(print_vhist(hist) == 1)
+		return 1;
+
+	return 0;
+}
+
+</pre>
+
+<p>　</p>
+<p>　</p>
+<p>　</p>
+
+</body>
+</html>

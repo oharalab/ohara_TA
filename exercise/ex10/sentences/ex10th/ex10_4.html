@@ -1,0 +1,82 @@
+<html>
+<head>
+  <title>実習課題10_4</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=shift_jis">
+</head>
+
+<body bgcolor="#000000" text="#FFFFFF" vlink="#00FF00" link="#99FFCC">
+
+
+<h2>実習課題10_4</h2>
+<hr>
+
+<p>
+<b>【ユークリッドの互除法】</b><br /><br />
+
+ユークリッドの互除法は，2つの自然数の最大公約数を求める方法である．<br>
+x ≧ y である2つの自然数 x と y が与えられたとき，x と y の最大公約数は <br>
+x を y で割った剰余 r と y の最大公約数となることを利用する．<br>
+具体的には x と y の最大公約数を返す関数を gcd(x, y) とすると，その関数値は<br>
+次のように定義できる．
+
+<pre>
+gcd(x, y) = x          (y ＝ 0 のとき）
+gcd(x, y) = gcd(y, r)  (y ≠ 0 のとき）
+ただし，r = x % y （x を y で割った余り）
+</pre>
+
+上記の定義に従い，キーボードから入力した2つの自然数（0は含まない）の最大公約数を求める<br>
+プログラムを作成せよ．<br>
+ただし，以下の関数プロトタイプをもつ再帰関数 gcd() を実装すること．
+
+<pre>
+int gcd(int x, int y);
+</pre>
+
+
+<br>
+
+<br />
+実行結果例1（赤文字がキーボードからの入力）：<br /><hr style="height:1px"/>
+<pre>
+2つの自然数をカンマで区切って入力してください：<font color="#FF0000">6,4</font>
+gcd(6, 4)
+gcd(4, 2)
+gcd(2, 0)
+6 と 4 の最大公約数は 2 です
+</pre>
+
+
+<br />
+実行結果例2（赤文字がキーボードからの入力）：<br /><hr style="height:1px"/>
+<pre>
+2つの自然数をカンマで区切って入力してください：<font color="#FF0000">4,6</font>
+gcd(4, 6)
+gcd(6, 4)
+gcd(4, 2)
+gcd(2, 0)
+4 と 6 の最大公約数は 2 です
+</pre>
+
+
+<br />
+実行結果例3（赤文字がキーボードからの入力）：<br /><hr style="height:1px"/>
+<pre>
+2つの自然数をカンマで区切って入力してください：<font color="#FF0000">13,9</font>
+gcd(13, 9)
+gcd(9, 4)
+gcd(4, 1)
+gcd(1, 0)
+13 と 9 の最大公約数は 1 です
+</pre>
+
+
+</p>
+
+
+<p>　</p>
+<p>　</p>
+<p>　</p>
+
+</body>
+</html>

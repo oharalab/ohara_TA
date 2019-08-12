@@ -1,0 +1,112 @@
+<html>
+<head>
+  <title>実習課題15_6</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=shift_jis">
+</head>
+
+<body bgcolor="#000000" text="#FFFFFF" vlink="#00FF00" link="#99FFCC">
+
+
+<h2>実習課題15_6</h2>
+<hr>
+
+<p>
+<b>【ファイルからのデータの読み込みとスタックへの保存】</b><br /><br />
+ex15_5.c に最大の GPA を探す関数 maxGPA() を実装したプログラム ex15_6.c を作成せよ．<br>
+なお，ex15_6.c は以下の部分に各関数の定義を加えるのみとし，以下に示している部分に<br>
+関しては，一切の変更・追記は認めない．<br>
+<font color="#FF0000">以下の部分が変更・追記されたプログラムは正しく動作しても 0 点とする．</font><br>
+</p>
+
+<pre>
+#include&lt;stdio.h&gt;
+#include&lt;stdlib.h&gt;
+
+#define  BUFSIZE 1024
+
+typedef struct {
+    int ID;
+    double GPA;
+} my_data;
+
+typedef struct sList{
+    my_data data;
+    struct sList *next;
+} sList;
+
+double minGPA(sList *root);
+double maxGPA(sList *root);
+sList *readData(char *fname);
+void printList(sList *p);    
+sList *pushNode(sList *root, sList *node); 
+sList *newNode(int id, double gpa);        
+void check_argnum(int min, int max, int arg_num, char *cmd); 
+void print_usage(char *cmd);  
+
+int main(int argc, char **argv){
+    sList *root;
+	
+    check_argnum(2, 2, argc, argv[0]);
+    root = readData(argv[1]);
+    printList(root);
+    printf("最小GPA: %f\n", minGPA(root));
+    printf("最大GPA: %f\n", maxGPA(root));
+
+    return 0;
+}
+
+</pre>
+
+<br /><div class="result">
+実行例（赤文字がキーボードからの入力）：<br /><hr style="height:1px"/>
+<pre>
+$ <font color="#FF0000">./ex15_6.exe data.txt</font>
+ID: 1
+GPA: 3.778000
+
+ID: 2
+GPA: 3.653000
+
+ID: 3
+GPA: 1.173000
+
+ID: 4
+GPA: 0.357000
+
+ID: 5
+GPA: 2.972000
+
+ID: 6
+GPA: 3.059000
+
+ID: 7
+GPA: 3.526000
+
+ID: 8
+GPA: 2.054000
+
+ID: 9
+GPA: 0.501000
+
+ID: 10
+GPA: 2.106000
+
+最小GPA: 0.357000
+最大GPA: 3.778000
+
+</pre>
+<br />
+
+</p>
+
+</pre>
+<br />
+
+</p>
+
+<p>　</p>
+<p>　</p>
+<p>　</p>
+
+</body>
+</html>

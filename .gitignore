@@ -117,10 +117,15 @@ venv.bak/
 /programs.zip
 
 #directry
-/output/
-/exercise/
+/configs/
 /exercise_old/
+/output/
+/output_csv/
+/programs/
 /test/
 /test_file/
 /tmp/
-/programs/
+
+# some unrelated txt
+*.txt
+*.pnm

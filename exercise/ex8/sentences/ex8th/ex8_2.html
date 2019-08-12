@@ -1,0 +1,59 @@
+<html>
+<head>
+  <title>実習課題8_2</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=shift_jis">
+</head>
+
+<body bgcolor="#000000" text="#FFFFFF" vlink="#00FF00" link="#99FFCC">
+
+
+<h2>実習課題8_2</h2>
+<hr>
+
+<p>
+<b>【gets() と atoi() による整数値の入力について】</b><br /><br />
+以下のコードを sample8_2.c として実装し，整数として不適切な値を入力した場合に<br>
+int 型の変数 n の値がどうなるかを実際に観察し，その挙動について Word ファイルにまとめよ.<br>
+Word ファイルでは，具体的にどういう入力に対して，どういう結果になるのかを列挙したうえで，<br>
+整数値の入力を期待する場合に gets() と atoi() を組み合わせて利用することの問題点を述べること．<br>
+Word ファイルのファイル名は ex8_2.docx とし，ファイルの冒頭には以下を必ず記入すること．<br>
+
+<pre>
+実習課題8_2 に対する回答
+学生番号：〇〇〇
+氏名：〇〇〇
+</pre>
+
+<a href="sample8_2.c">sample8_2.c</a> (右のリンクを右クリックしソースファイルを保存して利用してもよい）
+<pre>
+#include&lt;stdio.h&gt;
+#include&lt;stdlib.h&gt;
+
+#define BUFSIZE 128
+
+void print_msg(char n[]);
+
+int main(){
+    char buf[BUFSIZE];
+    int n;
+	
+    print_msg("整数値を入力してください：");
+    gets(buf);
+    n = atoi(buf);
+    printf("入力値：%d\n", n);
+	
+    return 0;
+}
+
+void print_msg(char n[]){
+    printf("%s", n);
+}
+</pre>
+
+
+<p>　</p>
+<p>　</p>
+<p>　</p>
+
+</body>
+</html>

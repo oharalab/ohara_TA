@@ -1,0 +1,89 @@
+<html>
+<head>
+  <title>実習課題8_16</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=shift_jis">
+</head>
+
+<body bgcolor="#000000" text="#FFFFFF" vlink="#00FF00" link="#99FFCC">
+
+
+<h2>実習課題8_16</h2>
+<hr>
+
+<p>
+<b>【カレンダーの表示】</b><br /><br />
+実習課題8_15 作成した ex8_15.c に，指定した年月のカレンダーを表示する関数 printCalendar() を実装し，<br>
+以下のプログラム ex8_16.c を完成させよ．関数 printCalendar() の第1引数は指定した年，第2引数は<br>
+指定した月，第3引数はその月の1日の曜日に対応するインデックスである．<br>
+なお，ex8_16.c は以下の部分に各関数の定義を加えるのみとし，以下に示している部分に<br>
+関しては，一切の変更・追記は認めない．<br>
+<font color="#FF0000">以下の部分が変更・追記されたプログラムは正しく動作しても 0 点とする．</font><br>
+
+
+<pre>
+#include&lt;stdio.h&gt;
+#include&lt;ctype.h&gt;
+#include&lt;string.h&gt;
+#include&lt;stdlib.h&gt;
+
+#define BUFSIZE 128
+
+int days[] = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
+char day_of_week[7][10]={
+	"sunday","monday","tuesday", "wednesday", "thursday","friday", "saturday"};
+
+void getInput(char msg[], char n[]);
+int isInt(char n[]);
+int getYear(void);
+int getMonth(void);
+int getDay(int y, int m);
+int getDays(int y, int m);
+int isLeapYear(int y);
+int getDayOfWeekForFirstDay(int y);
+int countDays(int y, int m, int d);
+int getDayOfWeek(int dow, int days);
+void printCalendar(int y, int m, int first);
+
+int main(){
+	int year, month, day, dow, dow_first, days_in_year;
+	
+	year = getYear();
+	month = getMonth();
+	dow_first = getDayOfWeekForFirstDay(year);
+	days_in_year = countDays(year, month, 1);
+	dow = getDayOfWeek(dow_first, days_in_year);
+	printCalendar(year, month, dow);
+	
+	return 0;
+}
+
+</pre>
+<br>
+
+
+<br /><div class="result">
+実行例（赤文字がキーボードからの入力）：<br /><hr style="height:1px"/>
+<pre>
+$ <font color="#FF0000">./ex8_16.exe</font>
+西暦を入力してください（2000年以降）：<font color="#FF0000">2019</font>
+月を入力してください：<font color="#FF0000">6</font>
+2019年6月
+Sun Mon Tue Wed Thu Fri Sat
+                          1
+  2   3   4   5   6   7   8
+  9  10  11  12  13  14  15
+ 16  17  18  19  20  21  22
+ 23  24  25  26  27  28  29
+ 30
+
+</pre>
+<br />
+
+</p>
+
+<p>　</p>
+<p>　</p>
+<p>　</p>
+
+</body>
+</html>
