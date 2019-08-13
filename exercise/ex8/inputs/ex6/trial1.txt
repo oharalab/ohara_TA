@@ -1,5 +1,0 @@
-0
-10
-a
-3
-cat result_3.txt
