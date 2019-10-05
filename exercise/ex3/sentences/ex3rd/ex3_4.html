@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>実習課題3_4</title>
+</head>
+
+<body bgcolor="#000000" text="#FFFFFF" vlink="#00FF00" link="#99FFCC">
+
+
+<h2>実習課題3_4</h2>
+<hr>
+
+<p>
+2つの整数型変数 x と y を定義し，キーボードから入力された<br>
+整数値の和と差を計算するプログラムを，以下のコードの<font color="#00FFFF">水色のコメント部分</font>を<br>
+その指示に従ってプログラムコードで置き換えることで完成させよ．<br>
+ただし，コメント1行に対して挿入するプログラムコードは1行のみとする．<br>
+プロジェクト名は ex3_4 とし，ソースファイルの名前は ex3_4.c とする．<br>
+</p>
+
+<pre>
+#include &lt;stdio.h&gt;
+
+int main(){
+	int x, y;
+
+	printf("整数値を入力してください：");
+	scanf("%d", &x);    // キーボードから入力された整数値を変数 x に保存（来週説明）
+	<font color="#00FFFF">/* 変数 x の内容を実行例のように出力する printf() を記述 */</font>
+	printf("整数値を入力してください：");
+	scanf("%d", &y);    // キーボードから入力された整数値を変数 y に保存（来週説明）
+	<font color="#00FFFF">/* 変数 y の内容を実行例のように出力する printf() を記述 */</font>
+
+	<font color="#00FFFF">/* 変数 x と y の和を画面に表示する printf() を記述 */</font>
+	<font color="#00FFFF">/* 変数 x と y の差を画面に表示する printf() を記述 */</font>
+
+	return (0);
+
+}
+</pre>
+
+<p>実行例（<font color="#FF0000">赤字</font>はキーボードからの入力）
+<hr><br>
+<pre>
+整数値を入力してください：<font color="#FF0000">5</font>
+x = 5
+整数値を入力してください：<font color="#FF0000">3</font>
+y = 3
+x + y = 8
+x - y = 2
+</pre>
+
+<p>　</p>
+<p>　</p>
+<p>　</p>
+
+</body>
+</html>
