@@ -199,17 +199,17 @@ class Compiler(object):
                         error = b'segmentation fault\n'
                     else:
                         error = b'return code %d\n' % result.returncode
-                
+
                 cat_result = ""
                 if cat_option is not None:
                     cat_result += "\n"
                     cat_result += subprocess.run(cat_option.split(), stdout = PIPE, stderr = PIPE).stdout.decode('utf-8', errors="ignore")
                 out[i+1].update({'std': output.decode('utf-8', errors="ignore")+cat_result, 'stderr': error.decode('utf-8')})
-                
+
                 if cat_option is not None:
                     # cat 対象のファイルは一度消す（そうでないと，同じ結果が採点に使われるため）
                     subprocess.call(["rm", cat_option.split()[-1]])
-                
+
                 out[i + 1].update({'point': 4})
                 if self.output_path is not None:
                     out[i+1].update({
@@ -243,7 +243,7 @@ class Compiler(object):
                 print(e)
                 print('Fail to read output file: %s' % OUTPUT_FILE_NAME[self.ex_num])
             return None
-        
+
 def zip2dict(zip_filename, students):
     # 正確には zip ではないが，Friday 側との互換性のため変数名は zipfiles
     zipfiles = {}
@@ -271,16 +271,16 @@ def zip2dict(zip_filename, students):
                 if temp_id > submit_id:
                     submit_id = temp_id
                     program_file = p_file
-                
+
             #print(student_id, submit_id)
             if student_id not in zipfiles:
                 zipfiles[student_id] = [(submit_id, program_file)]
             else:
                 zipfiles[student_id].append((submit_id, program_file))
-    
+
     return zipfiles
 
-        
+
 def main(args=None):
     """
     :param args:
@@ -333,7 +333,7 @@ def main(args=None):
     # 正確には zipfile ではなく，構造を展開して dict 化したもの
     zipfiles = zip2dict(args.zip, students)
     #print(zipfiles)
- 
+
     student_ids = sorted(zipfiles.keys())
     for student_id, zfiles in zipfiles.items():
         saiten = {}
@@ -345,7 +345,7 @@ def main(args=None):
 
         if not os.path.exists(extract_dir):
             os.makedirs(extract_dir)
-        
+
         # zip内のファイルを1つずつ参照
         # timestampの対策のため、コードを分割する
         for submit_id, program_file in zfiles:
@@ -356,8 +356,8 @@ def main(args=None):
                 print(ex_num)
                 if ex_num == -1:# or ex_num >= len(compilers):
                     continue
-                
-                # cp to tmp directory                            
+
+                # cp to tmp directory
                 file_path = os.path.join(extract_dir, name)
                 shutil.copyfile(program_file, file_path)
 
@@ -507,7 +507,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('-c', '--csv', help='make csv', default=True)
     parser.add_argument('--cmd_exercise', help='exercie num that need to use command line arguments (e.g. 1+2+3)', default="", type=str)
-    parser.add_argument('-d', '--debug', help='debug mode', default=False, type=bool)    
+    parser.add_argument('-d', '--debug', help='debug mode', default=False, type=bool)
     parser.add_argument('-e', '--exercise', help='the number of exersice', default=4, type=int)
     parser.add_argument('--exercise_path', help='the directory of exercise', default='./exercise/ex%d')
     parser.add_argument('--execution_dir', help='the directory of execution (test) environment', default='./execution_dir')
@@ -530,7 +530,7 @@ if __name__ == "__main__":
 
     args.cmd_exercise = set(args.cmd_exercise.split("+"))
     args.fixed_exercise = set(args.fixed_exercise.split("+"))
-    
+
     for filename in os.listdir(args.input_dir):
         print(filename)
         subprocess.call(["rm", filename])
@@ -539,12 +539,12 @@ if __name__ == "__main__":
 
     subprocess.call(["rm", "-r", args.tmp])
     os.makedirs(args.tmp)
-    
+
     subprocess.call(["rm", "-r", args.output_dir])
     os.makedirs(args.output_dir)
 
     main(args)
-    
-    
+
+
     if args.csv:
         subprocess.call(["python3", "other_tools/make_csv.py", "-n", str(args.num_tasks)])

@@ -1,8 +1,14 @@
+with open("students.txt", "r") as fr:
+    candidates = [line.split()[0] for line in fr]
+    print(candidates)
+    with open("candidates.txt", "w") as fw:
+        fw.write("\n".join(candidates))
+"""
 import argparse
 import pandas as pd
 
 parser = argparse.ArgumentParser()
-parser.add_argument('-f', '--filename', help='filename of 採点者N.txt')
+parser.add_argument('-f', '--filename', help='filename of 採点者-N.txt')
 
 args = parser.parse_args()
 
@@ -12,3 +18,4 @@ candidates = sorted(candidates)
 print(candidates)
 with open("../configs/candidates.txt", "w") as f:
     f.write("\n".join(candidates))
+"""

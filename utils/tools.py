@@ -20,7 +20,7 @@ def detect_exercise_num(file_path, offset=-1):
         basename = match_obj.group(1)
         exercise_num = int(basename)
         ext = match_obj.group(2)
-        if re.match(ext, 'c(pp)?'):
+        if re.match('c(pp)?', ext):
             return exercise_num + offset, False
         return -1, None
 
@@ -28,7 +28,8 @@ def detect_exercise_num(file_path, offset=-1):
     basename = match_obj.group(2)
     ext = match_obj.group(3)
     if not file_path.startswith('_'):
-        if re.match(ext, 'c(pp)?') is not None or ext == 'pptx':
+        # pptx はスルー
+        if re.match('c(pp)?', ext) is not None:
             if not ex_check:
                 print('Warning: File does not starts with "ex". {}'.format(file_path))
             exercise_num = int(basename)

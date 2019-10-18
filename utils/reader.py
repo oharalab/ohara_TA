@@ -30,8 +30,8 @@ def read_html_answer(filename, encoding="utf8"):
 
 
 def read_html_body(filename, encoding="utf8"):
-    with open(filename, 'r', encoding="shift-jis") as f:
-        html_data = f.read().encode(encoding, errors="ignore").decode(encoding)
+    with open(filename, 'r', encoding="utf8") as f:#encoding="shift-jis") as f:
+        html_data = f.read().encode(encoding, errors="ignore").decode(encoding, errors="ignore")
     _, html_data = html_data.split('<body')
     idx = html_data.find('>') + 1
     html_data, _ = html_data[idx:].split('</body')

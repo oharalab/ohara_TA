@@ -125,6 +125,7 @@ venv.bak/
 /test/
 /test_file/
 /tmp/
+.idea/
 
 # some unrelated txt
 *.txt
