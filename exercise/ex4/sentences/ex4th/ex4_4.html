@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>実習課題4_4</title>
+</head>
+
+<body bgcolor="#000000" text="#FFFFFF" vlink="#00FF00" link="#99FFCC">
+
+
+<h2>実習課題4_4</h2>
+<hr>
+
+<p>
+以下のプログラムには誤りが複数個所ある．<br>
+実行例のように正しい結果が得られるようにプログラムを修正せよ．<br>
+プロジェクト名は ex4_4 とし，ソースファイルの名前は ex4_4.c とする．<br>
+</p>
+
+<pre>
+#include &ltstdio.h&gt
+
+int main(){
+	double weight, height, BMI;
+
+	printf("体重（kg）を入力してください：¥n");
+	scanf("%f¥n", weight);
+
+	printf("身長（m）を入力してください：¥n");
+	scanf("%f¥n", height);
+
+	BMI = weight / height * height;
+	printf("BMI値：%.2f¥n", BMI);
+
+	return (0);
+}
+</pre>
+
+<p>実行例（<font color="#FF0000">赤字</font>はキーボードからの入力）
+<hr>
+<pre>
+体重（kg）を入力してください：<font color="#FF0000">63.5</font>
+身長（m）を入力してください：<font color="#FF0000">1.7</font>
+BMI値：21.97
+</pre>
+
+<p>　</p>
+<p>　</p>
+<p>　</p>
+
+</body>
+</html>
