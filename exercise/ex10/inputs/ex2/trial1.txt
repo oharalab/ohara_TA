@@ -1,0 +1,3 @@
+ローマ字で姓を入力．最後に空白1個を入力>aoyamaローマ字で名を入力>taroあなたの名前は aoyama taro ですね
+aoyama
+taro

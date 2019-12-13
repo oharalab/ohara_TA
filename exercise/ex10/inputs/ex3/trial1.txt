@@ -1,0 +1,3 @@
+英字の文字列を入力(63字まで)>sagamihara数える英字は>a文字列：sagamihara に含まれる a の字数は 4個です
+sagamihara
+a

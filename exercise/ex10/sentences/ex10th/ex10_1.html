@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>実習課題10_1</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=shift_jis">
+</head>
+
+<body bgcolor="#000000" text="#FFFFFF" vlink="#00FF00" link="#99FFCC">
+
+
+<h2>実習課題10_1</h2>
+<hr>
+
+<p>
+<b>【ASCIIコード】</b><br /><br />
+ローマ字（半角）で入力した氏名に対して，各文字のASCIIコードを出力するプログラムを作成せよ．<br>
+入力可能な文字数は63文字までとし，プログラムは変数・配列の宣言を除いて，<br>
+<blockquote>
+1. 配列・変数の初期化<br>
+2. 入力案内文の表示<br>
+3. 文字列の入力<br>
+4. 文字列中の各文字のASCIIコードの出力
+</blockquote>
+という構成とする．<br>
+また，上記 4 の処理は while文で実現するものとし，<br>
+終了条件としては入力された文字列の最後を判定するものとする．<br>
+ここでは，文字列に関するライブラリ関数は使用してはならず，<br>
+空白に関してはASCIIコードを出力することなく読み飛ばすものとする．<br>
+プロジェクト名は ex10_1とし，ソースファイルの名前は ex10_1.c とする．<br>
+
+<br>
+
+<p>
+＜ヒント＞<br>
+文字列を格納した配列を先頭から確認し，内容が文字列の最後を表すエスケープシーケンスになれば，
+そこで処理を終了させる．
+</p>
+
+<br />
+実行結果例（赤文字がキーボードからの入力）：<br /><hr style="height:1px"/>
+<pre><font style="font-family: Consolas, 'Courier New'">
+名前をローマ字で入力してください：<font color="#FF0000">Aoyama Taro</font>
+A[65]
+o[111]
+y[121]
+a[97]
+m[109]
+a[97]
+T[84]
+a[97]
+r[114]
+o[111]
+
+</font>
+</pre>
+</p>
+
+<p>　</p>
+<p>　</p>
+<p>　</p>
+
+</body>
+</html>

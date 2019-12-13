@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>実習課題10_4</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=shift_jis">
+</head>
+
+<body bgcolor="#000000" text="#FFFFFF" vlink="#00FF00" link="#99FFCC">
+
+
+<h2>実習課題10_4</h2>
+<hr>
+
+<p>
+<b>【曜日を表示する】</b><br /><br />
+月と日を別々に数値として入力すると，2019年での曜日を表示するプログラムを作成せよ．<br />
+以下の 実行結果例のようになるようプログラミングを行なうこと．<br />
+プロジェクト名は ex10_4とし，ソースファイルの名前は ex10_4.c とする．<br>
+<br />
+ 
+＜ヒント＞
+<pre>
+<font style="font-family: Consolas, 'Courier New'">
+以下のような配列を考えると実現できる．
+
+int days[12]={31,28,31,30,31,30,31,31,30,31,30,31};
+char weekname[7][10]={
+	"monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"};
+
+ここで，日数を7で割った余りを考える．
+2019年1月1日は火曜日であり，その日数 1 を 7 で割った余りが1となること，
+weekname[1] に "tuesday" が保存されていることに着目する
+（他の日付ではどうなるか？ たとえば，2月1日の日数は 31 + 1 = 32）．
+なお，二次元配列で文字列を扱う場合，printf関数では1つ目の添え字だけを指定する．
+たとえば，
+　　printf("%s", weekname[0]); 
+とすると，monday が表示される．
+</font>
+</pre>
+ 
+<br /><div class="result">
+実行結果例（赤文字がキーボードからの入力）：<br /><hr style="height:1px"/>
+<font style="font-family: Consolas, 'Courier New'">
+月を入力してください<br>
+<font color="#FF0000">12</font><br />
+日を入力してください<br>
+<font color="#FF0000">6</font><br />
+2019年での12月6日は340日目で，曜日はfridayです．<br />
+</font>
+
+<br />
+
+
+</p>
+
+<p>　</p>
+<p>　</p>
+<p>　</p>
+
+</body>
+</html>
